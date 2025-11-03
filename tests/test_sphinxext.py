@@ -46,10 +46,9 @@ def make_directive(
     settings = OptionParser(components=(Parser,)).get_default_values()
     document = new_document("<test>", settings=settings)
     if with_env:
-        env = SimpleNamespace(
-            config=SimpleNamespace(richterm_prompt=config_prompt, richterm_hide_command=config_hide)
-        )
+        env = SimpleNamespace(config=SimpleNamespace(richterm_prompt=config_prompt, richterm_hide_command=config_hide))
         if builder_format is not None:
+
             class DummyTags:
                 def eval_condition(self, expr: str) -> bool:
                     if expr.strip() == "html":
@@ -123,7 +122,7 @@ def test_directive_hide_command_from_config() -> None:
 
 
 def test_directive_failure_raises_sphinx_error() -> None:
-    directive = make_directive("python -c \"import sys; sys.exit(2)\"")
+    directive = make_directive('python -c "import sys; sys.exit(2)"')
     with pytest.raises(SphinxError):
         directive.run()
 
@@ -149,7 +148,7 @@ def test_directive_requires_command() -> None:
 
 
 def test_directive_invalid_command_syntax() -> None:
-    directive = make_directive("python -c \"unterminated")
+    directive = make_directive('python -c "unterminated')
     with pytest.raises(DirectiveError):
         directive.run()
 

@@ -66,9 +66,7 @@ class RichTermDirective(Directive):
         raw_node = nodes.raw("", svg, format="html")
 
         if completed.returncode != 0:
-            raise SphinxError(
-                f"Command '{command_to_display(command)}' exited with status {completed.returncode}"
-            )
+            raise SphinxError(f"Command '{command_to_display(command)}' exited with status {completed.returncode}")
 
         return [raw_node]
 

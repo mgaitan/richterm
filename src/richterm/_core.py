@@ -87,9 +87,7 @@ def run_command(
 def render_svg(command_display: str | None, output: str, options: RenderOptions) -> str:
     """Render *output* to SVG, optionally prefixed by *command_display*."""
 
-
-    console = Console(record=True, file=StringIO(), force_terminal=True)
-    import ipdb; ipdb.set_trace()
+    console = Console(record=True, file=StringIO())
 
     if not options.hide_command and command_display:
         prompt_text = Text.from_markup(options.prompt)
