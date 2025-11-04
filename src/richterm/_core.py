@@ -69,11 +69,12 @@ def run_command(
     """
 
     try:
-        # env_vars = _prepare_environment(env)
+        env_vars = _prepare_environment(env)
         return subprocess.run(
             command,
             check=False,
             cwd=str(cwd) if cwd is not None else None,
+            env=env_vars,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
