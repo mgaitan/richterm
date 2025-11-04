@@ -1,0 +1,93 @@
+[project]
+name = "richterm"
+description = "Generate colorful screenshots of terminal commands"
+authors = [{name = "Martín Gaitán", email = "gaitan@gmail.com"}]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = []
+version = "0.1.0"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Documentation",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+dependencies = ["rich"]
+
+[project.optional-dependencies]
+sphinx = ["sphinx>=7.4.7", "myst-parser>=3.0.0"]
+
+[build-system]
+requires = ["uv_build>=0.8.9,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "richterm"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",      # pycodestyle (E, W) https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
+    "F",      # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "I",      # isort
+    "C90",    # https://docs.astral.sh/ruff/rules/#mccabe-c90
+    "UP",     # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "RUF",    # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "T10",    # remove pdbs
+    "ISC",    # https://docs.astral.sh/ruff/rules/#flake8-implicit-str-concat-isc
+    "SIM",    # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "ASYNC",  # https://docs.astral.sh/ruff/rules/#flake8-async-async
+    "B",      # https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "C4",     # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "PIE",    # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
+    "FURB",   # https://docs.astral.sh/ruff/rules/#refurb-furb
+    "TID252", # https://docs.astral.sh/ruff/rules/relative-imports/
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--cov=richterm",
+    "--cov-report=term-missing",
+    "--cov-fail-under=100",
+    "--strict-markers",          # Fail if markers are not registered in pytest configuration
+    "--strict-config",           # Fail if there are errors in pytest configuration
+    "-ra",                       # Show extra test summary info for all except passed tests
+]
+
+[project.urls]
+Homepage = "https://mgaitan.github.io/richterm"
+Documentation = "https://mgaitan.github.io/richterm"
+Changelog = "https://github.com/mgaitan/richterm/releases"
+Repository = "https://github.com/mgaitan/richterm"
+Issues = "https://github.com/mgaitan/richterm/issues"
+Funding = "https://github.com/sponsors/mgaitan"
+
+[project.scripts]
+richterm = "richterm:main"
+
+[dependency-groups]
+tools = ["ipdb>=0.13.13", "ipython>=8.12.3"]
+test = [
+    "pytest>=8.3.5",
+    "pytest-freezer>=0.4.9",
+    "pytest-mock>=3.14.0",
+    "pytest-cov>=4.0.0",
+]
+lint = ["ruff"]
+docs = ["myst-parser>=3.0.0", "sphinx>=7.4.7", "sphinxcontrib-mermaid>=1.0.0"]
+dev = [{ include-group = "tools" }, { include-group = "test" }, { include-group = "lint" }]
