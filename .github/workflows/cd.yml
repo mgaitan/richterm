@@ -32,18 +32,46 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Detect pull request for preview
+        id: preview
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          pr="$(gh pr list --head "$GITHUB_REF_NAME" --state all --json number --jq '.[0].number')"
+          if [ -n "$pr" ]; then
+            echo "docs_subdir=_preview/${pr}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=${pr}" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/configure-pages@v5
       - uses: astral-sh/setup-uv@v7
       - env:
           FORCE_COLOR: 1
           COLUMNS: 90
+          UV_COLOR: always
         run:
           make docs
+      - name: Stage documentation artifact
+        run: |
+          out_dir="site"
+          subdir="${{ steps.preview.outputs.docs_subdir }}"
+          rm -rf "$out_dir"
+          if [ -n "$subdir" ]; then
+            mkdir -p "$out_dir/$subdir"
+            cp -a docs/_build/html/. "$out_dir/$subdir/"
+          else
+            mkdir -p "$out_dir"
+            cp -a docs/_build/html/. "$out_dir/"
+          fi
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/_build/html
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4
       - name: Summarize documentation URL
         run: |
-          echo "Documentation published at: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          url="${{ steps.deployment.outputs.page_url }}"
+          if [ -n "${{ steps.preview.outputs.docs_subdir }}" ]; then
+            url="${url%/}/${{ steps.preview.outputs.docs_subdir }}"
+          fi
+          echo "Documentation published at: ${url}" >> "$GITHUB_STEP_SUMMARY"

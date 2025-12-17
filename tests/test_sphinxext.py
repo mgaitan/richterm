@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import shlex
+from subprocess import CompletedProcess
 from types import SimpleNamespace
 
 import pytest
@@ -48,6 +50,7 @@ def make_directive(  # noqa: PLR0913
     config_shown: str | None = None,
     with_env: bool = True,
     builder_format: str | None = None,
+    config_use_pty: bool = False,
 ) -> RichTermDirective:
     settings = OptionParser(components=(Parser,)).get_default_values()
     document = new_document("<test>", settings=settings)
@@ -57,6 +60,7 @@ def make_directive(  # noqa: PLR0913
                 richterm_prompt=config_prompt,
                 richterm_hide_command=config_hide,
                 richterm_shown_command=config_shown,
+                richterm_use_pty=config_use_pty,
             )
         )
         if builder_format is not None:
@@ -196,6 +200,24 @@ def test_directive_defaults_without_env() -> None:
     assert config.richterm_prompt == "$"
     assert config.richterm_hide_command is False
     assert config.richterm_shown_command is None
+    assert config.richterm_use_pty is False
+
+
+def test_directive_can_request_pty(mocker) -> None:
+    mock_run_command = mocker.patch(
+        "richterm.sphinxext.run_command",
+        return_value=CompletedProcess(args=["script"], returncode=0, stdout="hi\n"),
+    )
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        config_use_pty=True,
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    called_command = mock_run_command.call_args.args[0]
+    assert called_command[:2] == ["script", "-qec"]
+    expected_shell = shlex.join(["python", "-c", "print('hi')"])
+    assert called_command[2] == expected_shell
 
 
 def test_directive_requires_command() -> None:
