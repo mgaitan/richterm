@@ -33,7 +33,7 @@ class DummyStateMachine:
         self.reporter = document.reporter
 
 
-def make_directive(
+def make_directive(  # noqa: PLR0913
     command: str,
     *,
     prompt: str | None = None,
