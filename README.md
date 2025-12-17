@@ -36,7 +36,7 @@ usage: richterm [-h|--hide-command] [-o PATH] [--prompt STR] [--shown-command ST
 - `--hide-command` hides the prompt and command line in the transcript.
 - `--prompt` accepts Rich markup and defaults to `$`.
 - `-o/--output` selects the SVG path; otherwise a timestamped filename is generated.
-- `--shown-command` lets you display a different command than the one executed (handy when a fixture command would distract readers).
+- `--shown-command` lets you display a different command than the one executed (handy when a fixture command would distract readers). Cannot be combined with `--hide-command`.
 
 Examples:
 

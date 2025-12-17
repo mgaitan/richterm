@@ -11,9 +11,12 @@ from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
 from sphinx.errors import SphinxError
+from sphinx.util import logging
 
 from . import get_version
 from ._core import CommandExecutionError, RenderOptions, command_to_display, render_svg, run_command
+
+logger = logging.getLogger(__name__)
 
 
 class RichTermDirective(Directive):
@@ -53,6 +56,9 @@ class RichTermDirective(Directive):
         hide_command = "hide-command" in self.options or bool(config.richterm_hide_command)
         shown_command_option = self.options.get("shown-command")
         shown_command = shown_command_option if shown_command_option is not None else config.richterm_shown_command
+        if hide_command and shown_command:
+            logger.warning("richterm: :shown-command: ignored because :hide-command: is set")
+            shown_command = None
 
         try:
             command = shlex.split(raw_command)

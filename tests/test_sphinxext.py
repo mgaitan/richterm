@@ -161,6 +161,22 @@ def test_directive_shown_command_from_config() -> None:
     assert "hi" in svg_text
 
 
+def test_directive_shown_command_ignored_when_hidden(mocker) -> None:
+    mock_warning = mocker.patch("richterm.sphinxext.logger.warning")
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        shown_command="echo pretend",
+        hide_option=True,
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    svg_text = _normalize_svg(nodes[0].astext())
+    assert "echo pretend" not in svg_text
+    assert "python -c" not in svg_text
+    assert "hi" in svg_text
+    mock_warning.assert_called_once()
+
+
 def test_directive_failure_raises_sphinx_error() -> None:
     directive = make_directive('python -c "import sys; sys.exit(2)"')
     with pytest.raises(SphinxError):

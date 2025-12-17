@@ -14,11 +14,11 @@
 Run without installing anything permanently:
 
 ```bash
-uvx richterm -- python -m rich --force-terminal example
+uvx richterm
 ```
 
 ```{richterm} env PYTHONPATH=../src uv run -m richterm --help
-:hide-command: true
+:shown-command: uvx richterm --help
 ```
 
 Key options:
@@ -53,21 +53,23 @@ richterm_hide_command = False
 richterm_shown_command = None
 ```
 
-Use the directive inside MyST Markdown (or reStructuredText):
+Use the directive inside MyST Markdown:
 
 ````md
 ```{richterm} python -m rich --force-terminal rainbow
 ```
 ````
 
-The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with ``:prompt:``, hide the command with ``:hide-command:``, or swap the displayed command while running another with ``:shown-command:`` (falls back to ``richterm_shown_command`` if set).
+Or in reStructuredText:
 
-## Example capture
-
-Below is a live capture rendered during the documentation build:
-
-```{richterm} python -m rich --force-terminal tree
+```rst
+.. richterm:: python -m rich --force-terminal rainbow
+:shown-command: python -m rich rainbow
 ```
+
+The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with ``:prompt:``, hide the command with ``:hide-command:``, or swap the displayed command while running another with ``:shown-command:`` (falls back to ``richterm_shown_command`` if set).
+If you hide the command, any ``:shown-command:`` value is ignored (a warning is emitted).
+
 
 ```{toctree}
 :maxdepth: 2

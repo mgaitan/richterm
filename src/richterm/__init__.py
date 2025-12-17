@@ -41,7 +41,8 @@ def get_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("-?", "--help", action="help", help="Show this help message and exit.")
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
-    parser.add_argument(
+    visibility = parser.add_mutually_exclusive_group()
+    visibility.add_argument(
         "-h",
         "--hide-command",
         action="store_true",
@@ -59,7 +60,7 @@ def get_parser() -> argparse.ArgumentParser:
         default="$",
         help="Prompt to display before the command. Accepts Rich markup.",
     )
-    parser.add_argument(
+    visibility.add_argument(
         "--shown-command",
         dest="shown_command",
         help="Override the command text shown in the transcript without changing the executed command.",

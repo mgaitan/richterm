@@ -62,6 +62,7 @@ def test_cli_shown_command_override(tmp_path: Path) -> None:
     output_path = tmp_path / "shown.svg"
     exit_code = main(
         [
+            # mutually exclusive with --hide-command
             "--shown-command",
             "echo pretend",
             "-o",
@@ -76,6 +77,11 @@ def test_cli_shown_command_override(tmp_path: Path) -> None:
     assert "real" in svg
     assert "echo pretend" in svg
     assert "python -c" not in svg
+
+
+def test_cli_shown_command_rejects_hide_command() -> None:
+    with pytest.raises(SystemExit):
+        main(["--shown-command", "echo pretend", "--hide-command", "echo", "hi"])
 
 
 def test_cli_non_zero_exit_code(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
