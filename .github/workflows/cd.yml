@@ -71,6 +71,7 @@ jobs:
           FORCE_COLOR: 1
           COLUMNS: 90
           UV_COLOR: always
+          PYTHONPATH: src
         run:
           make docs
       - name: Stage documentation artifact
