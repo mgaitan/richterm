@@ -14,6 +14,11 @@ EXIT_STATUS_NOT_FOUND = 127
 MODULE_EXIT_CODE = 5
 
 
+def _normalize_svg(svg_text: str) -> str:
+    # Replace Rich's non-breaking spaces to allow simple substring checks.
+    return svg_text.replace("&#160;", " ")
+
+
 def test_cli_requires_command(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit):
         main([])
@@ -48,9 +53,35 @@ def test_cli_hide_command(tmp_path: Path) -> None:
         ]
     )
     assert exit_code == 0
-    svg = output_path.read_text(encoding="utf-8")
+    svg = _normalize_svg(output_path.read_text(encoding="utf-8"))
     assert "hidden" in svg
     assert "$ python" not in svg
+
+
+def test_cli_shown_command_override(tmp_path: Path) -> None:
+    output_path = tmp_path / "shown.svg"
+    exit_code = main(
+        [
+            # mutually exclusive with --hide-command
+            "--shown-command",
+            "echo pretend",
+            "-o",
+            str(output_path),
+            "python",
+            "-c",
+            "print('real')",
+        ]
+    )
+    assert exit_code == 0
+    svg = _normalize_svg(output_path.read_text(encoding="utf-8"))
+    assert "real" in svg
+    assert "echo pretend" in svg
+    assert "python -c" not in svg
+
+
+def test_cli_shown_command_rejects_hide_command() -> None:
+    with pytest.raises(SystemExit):
+        main(["--shown-command", "echo pretend", "--hide-command", "echo", "hi"])
 
 
 def test_cli_non_zero_exit_code(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:

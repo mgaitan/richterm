@@ -33,6 +33,10 @@ class DummyStateMachine:
         self.reporter = document.reporter
 
 
+def _normalize_svg(svg_text: str) -> str:
+    return svg_text.replace("&#160;", " ")
+
+
 def make_directive(  # noqa: PLR0913
     command: str,
     *,
@@ -40,13 +44,21 @@ def make_directive(  # noqa: PLR0913
     hide_option: bool = False,
     config_prompt: str = "$",
     config_hide: bool = False,
+    shown_command: str | None = None,
+    config_shown: str | None = None,
     with_env: bool = True,
     builder_format: str | None = None,
 ) -> RichTermDirective:
     settings = OptionParser(components=(Parser,)).get_default_values()
     document = new_document("<test>", settings=settings)
     if with_env:
-        env = SimpleNamespace(config=SimpleNamespace(richterm_prompt=config_prompt, richterm_hide_command=config_hide))
+        env = SimpleNamespace(
+            config=SimpleNamespace(
+                richterm_prompt=config_prompt,
+                richterm_hide_command=config_hide,
+                richterm_shown_command=config_shown,
+            )
+        )
         if builder_format is not None:
 
             class DummyTags:
@@ -65,6 +77,8 @@ def make_directive(  # noqa: PLR0913
         options["prompt"] = RichTermDirective.option_spec["prompt"](prompt)
     if hide_option:
         options["hide-command"] = RichTermDirective.option_spec["hide-command"](None)
+    if shown_command is not None:
+        options["shown-command"] = RichTermDirective.option_spec["shown-command"](shown_command)
 
     return RichTermDirective(
         name="richterm",
@@ -84,6 +98,7 @@ def test_setup_registers_extension(mocker) -> None:
     config = setup(app)
     app.add_config_value.assert_any_call("richterm_prompt", "$", "env")
     app.add_config_value.assert_any_call("richterm_hide_command", False, "env")
+    app.add_config_value.assert_any_call("richterm_shown_command", None, "env")
     app.add_directive.assert_called_with("richterm", RichTermDirective)
     assert config["version"] == get_version()
 
@@ -92,8 +107,7 @@ def test_directive_renders_svg() -> None:
     directive = make_directive("python -c \"print('hi')\"", prompt="[bold cyan]$")
     nodes = directive.run()
     assert len(nodes) == 1
-    raw_node = nodes[0]
-    svg_text = raw_node.astext()
+    svg_text = _normalize_svg(nodes[0].astext())
     assert "<svg" in svg_text
     assert "hi" in svg_text
     assert "python" in svg_text
@@ -103,7 +117,7 @@ def test_directive_hide_command_option() -> None:
     directive = make_directive("python -c \"print('hi')\"", hide_option=True)
     nodes = directive.run()
     assert len(nodes) == 1
-    svg_text = nodes[0].astext()
+    svg_text = _normalize_svg(nodes[0].astext())
     assert "python -c" not in svg_text
     assert "hi" in svg_text
 
@@ -116,9 +130,51 @@ def test_directive_hide_command_from_config() -> None:
     )
     nodes = directive.run()
     assert len(nodes) == 1
-    svg_text = nodes[0].astext()
+    svg_text = _normalize_svg(nodes[0].astext())
     assert "python -c" not in svg_text
     assert "hi" in svg_text
+
+
+def test_directive_shown_command_option() -> None:
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        shown_command="echo pretend",
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    svg_text = _normalize_svg(nodes[0].astext())
+    assert "echo pretend" in svg_text
+    assert "python -c" not in svg_text
+    assert "hi" in svg_text
+
+
+def test_directive_shown_command_from_config() -> None:
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        config_shown="echo pretend",
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    svg_text = _normalize_svg(nodes[0].astext())
+    assert "echo pretend" in svg_text
+    assert "python -c" not in svg_text
+    assert "hi" in svg_text
+
+
+def test_directive_shown_command_ignored_when_hidden(mocker) -> None:
+    mock_warning = mocker.patch("richterm.sphinxext.logger.warning")
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        shown_command="echo pretend",
+        hide_option=True,
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    svg_text = _normalize_svg(nodes[0].astext())
+    assert "echo pretend" not in svg_text
+    assert "python -c" not in svg_text
+    assert "hi" in svg_text
+    mock_warning.assert_called_once()
 
 
 def test_directive_failure_raises_sphinx_error() -> None:
@@ -139,6 +195,7 @@ def test_directive_defaults_without_env() -> None:
     config = directive._get_config()
     assert config.richterm_prompt == "$"
     assert config.richterm_hide_command is False
+    assert config.richterm_shown_command is None
 
 
 def test_directive_requires_command() -> None:

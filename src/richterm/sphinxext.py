@@ -11,9 +11,12 @@ from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 from sphinx.application import Sphinx
 from sphinx.errors import SphinxError
+from sphinx.util import logging
 
 from . import get_version
 from ._core import CommandExecutionError, RenderOptions, command_to_display, render_svg, run_command
+
+logger = logging.getLogger(__name__)
 
 
 class RichTermDirective(Directive):
@@ -24,6 +27,7 @@ class RichTermDirective(Directive):
     final_argument_whitespace = True
     option_spec: ClassVar[dict[str, Callable[[str | None], object]]] = {
         "prompt": directives.unchanged,
+        "shown-command": directives.unchanged,
         "hide-command": directives.flag,
     }
     has_content = False
@@ -31,11 +35,16 @@ class RichTermDirective(Directive):
     def _get_config(self) -> SimpleNamespace:
         env = getattr(self.state.document.settings, "env", None)
         if env is None:
-            return SimpleNamespace(richterm_prompt="$", richterm_hide_command=False)
+            return SimpleNamespace(richterm_prompt="$", richterm_hide_command=False, richterm_shown_command=None)
         config = getattr(env, "config", None)
         prompt = getattr(config, "richterm_prompt", "$")
         hide = getattr(config, "richterm_hide_command", False)
-        return SimpleNamespace(richterm_prompt=prompt, richterm_hide_command=hide)
+        shown_command = getattr(config, "richterm_shown_command", None)
+        return SimpleNamespace(
+            richterm_prompt=prompt,
+            richterm_hide_command=hide,
+            richterm_shown_command=shown_command,
+        )
 
     def run(self) -> list[nodes.Node]:
         raw_command = self.arguments[0].strip()
@@ -45,6 +54,11 @@ class RichTermDirective(Directive):
         config = self._get_config()
         prompt = self.options.get("prompt", config.richterm_prompt)
         hide_command = "hide-command" in self.options or bool(config.richterm_hide_command)
+        shown_command_option = self.options.get("shown-command")
+        shown_command = shown_command_option if shown_command_option is not None else config.richterm_shown_command
+        if hide_command and shown_command:
+            logger.warning("richterm: :shown-command: ignored because :hide-command: is set")
+            shown_command = None
 
         try:
             command = shlex.split(raw_command)
@@ -57,8 +71,11 @@ class RichTermDirective(Directive):
             raise self.severe(str(exc)) from exc
 
         transcript = completed.stdout or ""
+        command_display = None
+        if not hide_command:
+            command_display = shown_command or command_to_display(command)
         svg = render_svg(
-            command_to_display(command) if not hide_command else None,
+            command_display,
             transcript,
             RenderOptions(prompt=prompt, hide_command=hide_command),
         )
@@ -76,6 +93,7 @@ class RichTermDirective(Directive):
 def setup(app: Sphinx) -> dict[str, object]:
     app.add_config_value("richterm_prompt", "$", "env")
     app.add_config_value("richterm_hide_command", False, "env")
+    app.add_config_value("richterm_shown_command", None, "env")
     app.add_directive("richterm", RichTermDirective)
     return {
         "version": get_version(),
