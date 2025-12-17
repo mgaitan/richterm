@@ -35,15 +35,22 @@ class RichTermDirective(Directive):
     def _get_config(self) -> SimpleNamespace:
         env = getattr(self.state.document.settings, "env", None)
         if env is None:
-            return SimpleNamespace(richterm_prompt="$", richterm_hide_command=False, richterm_shown_command=None)
+            return SimpleNamespace(
+                richterm_prompt="$",
+                richterm_hide_command=False,
+                richterm_shown_command=None,
+                richterm_use_pty=False,
+            )
         config = getattr(env, "config", None)
         prompt = getattr(config, "richterm_prompt", "$")
         hide = getattr(config, "richterm_hide_command", False)
         shown_command = getattr(config, "richterm_shown_command", None)
+        use_pty = getattr(config, "richterm_use_pty", False)
         return SimpleNamespace(
             richterm_prompt=prompt,
             richterm_hide_command=hide,
             richterm_shown_command=shown_command,
+            richterm_use_pty=use_pty,
         )
 
     def run(self) -> list[nodes.Node]:
@@ -64,6 +71,9 @@ class RichTermDirective(Directive):
             command = shlex.split(raw_command)
         except ValueError as exc:
             raise self.severe(f"Failed to parse command: {exc}") from exc  # noqa: TRY003
+
+        if config.richterm_use_pty:
+            command = ["script", "-qec", shlex.join(command), "/dev/null"]
 
         try:
             completed = run_command(command)
@@ -94,6 +104,7 @@ def setup(app: Sphinx) -> dict[str, object]:
     app.add_config_value("richterm_prompt", "$", "env")
     app.add_config_value("richterm_hide_command", False, "env")
     app.add_config_value("richterm_shown_command", None, "env")
+    app.add_config_value("richterm_use_pty", False, "env")
     app.add_directive("richterm", RichTermDirective)
     return {
         "version": get_version(),

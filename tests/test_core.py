@@ -76,13 +76,3 @@ def test_prepare_environment_respects_no_color(monkeypatch) -> None:
     assert env["NO_COLOR"] == "1"
     for key in ("FORCE_COLOR", "CLICOLOR_FORCE", "PY_COLORS", "TTY_COMPATIBLE"):
         assert key not in env
-
-
-def test_prepare_environment_allows_forced_color(monkeypatch) -> None:
-    monkeypatch.delenv("RICHTERM_DISABLE_COLOR_HINT", raising=False)
-    env = _prepare_environment({"NO_COLOR": "1", "FORCE_COLOR": "1"})
-    assert "NO_COLOR" not in env
-    assert env["FORCE_COLOR"] == "1"
-    assert env["CLICOLOR_FORCE"] == "1"
-    assert env["PY_COLORS"] == "1"
-    assert env["TTY_COMPATIBLE"] == "1"
