@@ -29,22 +29,6 @@ release: ## Create a GitHub release for the current version
 	git push origin main; \
 	gh release create "$$version" --generate-notes
 
-.PHONY: gh-publish
-gh-publish: ## Create GitHub repo with gh (if missing) and push main
-	@if ! command -v gh >/dev/null 2>&1; then \
-		echo "❌ gh CLI not found; install https://cli.github.com/"; exit 1; \
-	fi
-	@set -e; \
-	repo="mgaitan/richterm"; \
-	url="git@github.com:$$repo.git"; \
-	if gh repo view "$$repo" >/dev/null 2>&1; then \
-		git remote add origin "$$url" 2>/dev/null || git remote set-url origin "$$url"; \
-	else \
-		gh repo create "$$repo" --description "Generate colorful screenshots of terminal commands" --source=. --private --push --remote=origin; \
-		exit 0; \
-	fi; \
-	git push -u origin main
-
 .PHONY: docs docs-html docs-epub docs-open html epub open
 
 DOCS_SOURCE := docs
