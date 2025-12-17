@@ -1,14 +1,15 @@
 # Changes here will be overwritten by Copier.
-_commit: 7e5de02
+_commit: v0.3.3
 _src_path: gh:mgaitan/python-package-copier-template
 author_email: gaitan@gmail.com
 author_fullname: Martín Gaitán
 author_username: mgaitan
 copyright_license: BSD-3-Clause
+gh_repo_create: public
 project_description: Generate colorful screenshots of terminal commands
 project_name: richterm
 python_package_command_line_name: richterm
 python_package_distribution_name: richterm
 python_package_import_name: richterm
 repository_name: richterm
-repository_namespace: mgaitan
+
