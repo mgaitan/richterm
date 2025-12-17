@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import sys
+from importlib import metadata
 from pathlib import Path
 from runpy import run_module
 
 import pytest
 
-from richterm import main
+from richterm import get_version, main
 
 
 def test_cli_requires_command(capsys: pytest.CaptureFixture[str]) -> None:
@@ -30,7 +31,18 @@ def test_cli_runs_command_and_creates_svg(tmp_path: Path, capsys: pytest.Capture
 
 def test_cli_hide_command(tmp_path: Path) -> None:
     output_path = tmp_path / "no_command.svg"
-    exit_code = main(["-h", "--prompt", "[bold]$", "-o", str(output_path), "python", "-c", "print('hidden')"])
+    exit_code = main(
+        [
+            "-h",
+            "--prompt",
+            "[bold]$",
+            "-o",
+            str(output_path),
+            "python",
+            "-c",
+            "print('hidden')",
+        ]
+    )
     assert exit_code == 0
     svg = output_path.read_text(encoding="utf-8")
     assert "hidden" in svg
@@ -69,3 +81,11 @@ def test_module_entry_point(mocker) -> None:
         run_module("richterm.__main__", run_name="__main__")
     assert excinfo.value.code == 5
     patched_main.assert_called_once_with(["--version"])
+
+
+def test_get_version_package_not_found(mocker) -> None:
+    mocker.patch(
+        "importlib.metadata.version",
+        side_effect=metadata.PackageNotFoundError("not found"),
+    )
+    assert get_version() == "unknown"
