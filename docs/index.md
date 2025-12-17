@@ -26,6 +26,7 @@ Key options:
 - `--prompt`: Rich markup shown before the command (defaults to `$`).
 - `--hide-command`: omit the prompt/command from the SVG.
 - `-o/--output`: select the SVG destination; otherwise `rich_term_<TIMESTAMP>.svg` is created in the working directory.
+- `--shown-command`: render a different command string than the one executed (useful when the real invocation is noisy or repetitive).
 
 Rich output is encouraged automatically: unless you opt out, the command runs with colour-friendly hints (`TERM`, `FORCE_COLOR`, `CLICOLOR_FORCE`, `PY_COLORS`, `TTY_COMPATIBLE`).
 Set `RICHTERM_DISABLE_COLOR_HINT=1` or export `NO_COLOR` to skip these tweaks.
@@ -48,6 +49,8 @@ extensions = [
 ]
 richterm_prompt = "[bold]$"
 richterm_hide_command = False
+# Optional default text to display instead of the executed command
+richterm_shown_command = None
 ```
 
 Use the directive inside MyST Markdown (or reStructuredText):
@@ -57,7 +60,7 @@ Use the directive inside MyST Markdown (or reStructuredText):
 ```
 ````
 
-The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with ``:prompt:`` or hide the command with ``:hide-command:``.
+The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with ``:prompt:``, hide the command with ``:hide-command:``, or swap the displayed command while running another with ``:shown-command:`` (falls back to ``richterm_shown_command`` if set).
 
 ## Example capture
 

@@ -60,6 +60,11 @@ def get_parser() -> argparse.ArgumentParser:
         help="Prompt to display before the command. Accepts Rich markup.",
     )
     parser.add_argument(
+        "--shown-command",
+        dest="shown_command",
+        help="Override the command text shown in the transcript without changing the executed command.",
+    )
+    parser.add_argument(
         "command",
         nargs=argparse.REMAINDER,
         help="Command to execute. Additional arguments are passed through verbatim.",
@@ -73,6 +78,7 @@ class CLIOptions:
     prompt: str
     hide_command: bool
     output: Path | None
+    shown_command: str | None
 
 
 def _parse_args(args: Sequence[str] | None) -> CLIOptions:
@@ -85,6 +91,7 @@ def _parse_args(args: Sequence[str] | None) -> CLIOptions:
         prompt=parsed.prompt,
         hide_command=parsed.hide_command,
         output=parsed.output,
+        shown_command=parsed.shown_command,
     )
 
 
@@ -103,8 +110,11 @@ def main(args: Sequence[str] | None = None) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     transcript = completed.stdout or ""
+    command_display = None
+    if not options.hide_command:
+        command_display = options.shown_command or command_to_display(options.command)
     svg = render_svg(
-        command_to_display(options.command) if not options.hide_command else None,
+        command_display,
         transcript,
         RenderOptions(prompt=options.prompt, hide_command=options.hide_command),
     )

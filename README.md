@@ -7,7 +7,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/mgaitan/richterm/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/mgaitan/richterm/blob/main/LICENSE)
 
-`richterm` turns arbitrary terminal commands into Rich-rendered SVG transcripts. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
+`richterm` turns arbitrary terminal commands into Rich-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
 
 ## Quick start
 
@@ -30,12 +30,13 @@ To keep colours vibrant even in non-interactive captures, `richterm` sets friend
 ## Command-line usage
 
 ```
-usage: richterm [-h|--hide-command] [-o PATH] [--prompt STR] <command...>
+usage: richterm [-h|--hide-command] [-o PATH] [--prompt STR] [--shown-command STR] <command...>
 ```
 
 - `--hide-command` hides the prompt and command line in the transcript.
 - `--prompt` accepts Rich markup and defaults to `$`.
 - `-o/--output` selects the SVG path; otherwise a timestamped filename is generated.
+- `--shown-command` lets you display a different command than the one executed (handy when a fixture command would distract readers).
 
 Examples:
 
@@ -43,6 +44,7 @@ Examples:
 richterm ls -la
 richterm --prompt "[bold blue]λ" -o docs/_static/listing.svg git status --short
 richterm --hide-command python -c "print('\033[31merror\033[0m')"
+richterm --shown-command "pytest -q" python -c "print('actually running something else')"
 ```
 
 ## Sphinx integration
