@@ -72,7 +72,8 @@ jobs:
           COLUMNS: 90
           UV_COLOR: always
           PYTHONPATH: src
-        run:
+        run: |
+          unset NO_COLOR
           make docs
       - name: Stage documentation artifact
         run: |
