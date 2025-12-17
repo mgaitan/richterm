@@ -25,7 +25,7 @@ uv tool install richterm
 
 Each invocation writes an SVG named `rich_term_<TIMESTAMP>.svg` (or the file passed with `-o/--output`) and echoes the command output back to the terminal.
 
-To keep colours vibrant even in non-interactive captures, `richterm` sets friendly defaults: `TERM=xterm-256color` (when missing) plus `FORCE_COLOR=1`, `CLICOLOR_FORCE=1`, `PY_COLORS=1`, and `TTY_COMPATIBLE=1` unless you override them. Opt out with `RICHTERM_DISABLE_COLOR_HINT=1` or by exporting `NO_COLOR`.
+To keep colours vibrant even in non-interactive captures, `richterm` sets friendly defaults: `TERM=xterm-256color` (when missing) plus `FORCE_COLOR=1`, `CLICOLOR_FORCE=1`, `PY_COLORS=1`, and `TTY_COMPATIBLE=1` unless you override them. Opt out with `RICHTERM_DISABLE_COLOR_HINT=1` or by exporting `NO_COLOR`; if your CI sets `NO_COLOR` but you still want colour, explicitly set `FORCE_COLOR=1`.
 
 ## Command-line usage
 

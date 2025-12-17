@@ -43,12 +43,19 @@ def _prepare_environment(env: Mapping[str, str] | None) -> dict[str, str]:
     if env is not None:
         env_vars.update(env)
 
+    def _is_truthy(value: str | None) -> bool:
+        return value not in {None, "", "0", "false", "False"}
+
     term = env_vars.get("TERM", "")
     if not term or term == "dumb":
         env_vars["TERM"] = "xterm-256color"
 
-    if "NO_COLOR" in env_vars:
+    color_requested = any(_is_truthy(env_vars.get(key)) for key in _COLOR_ENV_DEFAULTS)
+    if "NO_COLOR" in env_vars and not color_requested:
         return env_vars
+
+    if color_requested:
+        env_vars.pop("NO_COLOR", None)
 
     for key, value in _COLOR_ENV_DEFAULTS.items():
         env_vars.setdefault(key, value)

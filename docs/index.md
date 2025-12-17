@@ -29,7 +29,7 @@ Key options:
 - `--shown-command`: render a different command string than the one executed (useful when the real invocation is noisy or repetitive).
 
 Rich output is encouraged automatically: unless you opt out, the command runs with colour-friendly hints (`TERM`, `FORCE_COLOR`, `CLICOLOR_FORCE`, `PY_COLORS`, `TTY_COMPATIBLE`).
-Set `RICHTERM_DISABLE_COLOR_HINT=1` or export `NO_COLOR` to skip these tweaks.
+Set `RICHTERM_DISABLE_COLOR_HINT=1` or export `NO_COLOR` to skip these tweaks. If your CI sets `NO_COLOR` but you still want colour, export `FORCE_COLOR=1`.
 
 To install the tool permanently:
 
