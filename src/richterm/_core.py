@@ -82,7 +82,7 @@ def run_command(
             errors="replace",
         )
     except FileNotFoundError as exc:  # pragma: no cover - exercised via CommandExecutionError
-        raise CommandExecutionError(f"Command not found: {command[0] if command else '<empty>'}") from exc
+        raise CommandExecutionError(f"Command not found: {command[0] if command else '<empty>'}") from exc  # noqa: TRY003
 
 
 def render_svg(command_display: str | None, output: str, options: RenderOptions) -> str:

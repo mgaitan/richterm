@@ -28,5 +28,16 @@ richterm_hide_command = False
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
+
+
+myst_url_schemes = {
+    "http": None,
+    "https": None,
+    "gh": {
+        "url": "https://github.com/mgaitan/richterm/main/#",
+        "title": "",
+        "classes": ["github"],
+    },
+}

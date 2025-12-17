@@ -14,8 +14,13 @@ wheels/
 coverage.xml
 htmlcov/
 
-# docs
+# tools
+.coverage*
+/.pdm-build/
+/htmlcov/
+/site/
 docs/_build/
+uv.lock
 
 # tooling caches
 .pytest_cache/

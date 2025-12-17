@@ -40,7 +40,7 @@ class RichTermDirective(Directive):
     def run(self) -> list[nodes.Node]:
         raw_command = self.arguments[0].strip()
         if not raw_command:
-            raise self.severe("richterm directive requires a command to execute")
+            raise self.severe("richterm directive requires a command to execute")  # noqa: TRY003
 
         config = self._get_config()
         prompt = self.options.get("prompt", config.richterm_prompt)
@@ -49,7 +49,7 @@ class RichTermDirective(Directive):
         try:
             command = shlex.split(raw_command)
         except ValueError as exc:
-            raise self.severe(f"Failed to parse command: {exc}") from exc
+            raise self.severe(f"Failed to parse command: {exc}") from exc  # noqa: TRY003
 
         try:
             completed = run_command(command)
@@ -66,7 +66,9 @@ class RichTermDirective(Directive):
         raw_node = nodes.raw("", svg, format="html")
 
         if completed.returncode != 0:
-            raise SphinxError(f"Command '{command_to_display(command)}' exited with status {completed.returncode}")
+            raise SphinxError(  # noqa: TRY003
+                f"Command '{command_to_display(command)}' exited with status {completed.returncode}"
+            )
 
         return [raw_node]
 

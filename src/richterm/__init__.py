@@ -7,7 +7,7 @@ import sys
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from importlib.metadata import PackageNotFoundError, version
+from importlib import metadata
 from pathlib import Path
 
 from ._core import (
@@ -21,8 +21,8 @@ from ._core import (
 
 def get_version() -> str:
     try:
-        return version("richterm")
-    except PackageNotFoundError:  # pragma: no cover - resolved at runtime when installed
+        return metadata.version("richterm")
+    except metadata.PackageNotFoundError:  # pragma: no cover - resolved at runtime when installed
         return "unknown"
 
 

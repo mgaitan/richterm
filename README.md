@@ -14,14 +14,13 @@
 Run the CLI without installing anything permanently:
 
 ```bash
-uvx richterm -- python -m rich
+uvx richterm
 ```
 
-Install globally when you are ready:
+To install the tool permanently:
 
 ```bash
 uv tool install richterm
-richterm --prompt "[bold green]❯" python -c "print('hello')"
 ```
 
 Each invocation writes an SVG named `rich_term_<TIMESTAMP>.svg` (or the file passed with `-o/--output`) and echoes the command output back to the terminal.
@@ -48,7 +47,7 @@ richterm --hide-command python -c "print('\033[31merror\033[0m')"
 
 ## Sphinx integration
 
-Install the optional Sphinx extras and enable the extension:
+`richterm` optionally works as a [Sphinx](https://www.sphinx-doc.org/) extension. Install the extras and enable it in your `conf.py`:
 
 ```bash
 uv add richterm[sphinx]
@@ -65,12 +64,19 @@ richterm_prompt = "[bold]$"
 richterm_hide_command = False
 ```
 
-Then use the directive in MyST or reStructuredText:
+Then use the directive in MyST:
 
 ````md
 ```{richterm} python -m rich --force-terminal --no-color-system example
 ```
 ````
+
+Or in reStructuredText:
+
+```rst
+.. richterm:: python -m rich --force-terminal --no-color-system example
+```
+
 
 The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal block for non-HTML builders. The `:prompt:` and `:hide-command:` options mirror the CLI flags.
 
@@ -81,6 +87,9 @@ Tests depend on the Sphinx extras:
 ```bash
 uv run --extra sphinx pytest
 ```
+
+Or directly `make test`
+
 
 Build the documentation (which exercises the directive itself):
 
