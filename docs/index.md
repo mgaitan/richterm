@@ -1,6 +1,6 @@
 # richterm
 
-[![ci](https://github.com/mgaitan/richterm/workflows/ci/badge.svg)](https://github.com/mgaitan/richterm/actions?query=workflow%3Aci)
+[![ci](https://github.com/mgaitan/richterm/actions/workflows/ci.yml/badge.svg)](https://github.com/mgaitan/richterm/actions/workflows/ci.yml)
 [![docs](https://img.shields.io/badge/docs-blue.svg?style=flat)](https://mgaitan.github.io/richterm/)
 [![pypi version](https://img.shields.io/pypi/v/richterm.svg)](https://pypi.org/project/richterm/)
 [![Changelog](https://img.shields.io/github/v/release/mgaitan/richterm?include_prereleases&label=changelog)](https://github.com/mgaitan/richterm/releases)
