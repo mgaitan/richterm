@@ -4,6 +4,13 @@ on:
   release:
     types: [created]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Ref (branch or tag) to build (defaults to the triggered ref)"
+        required: false
+      pr:
+        description: "PR number for preview (optional)"
+        required: false
 
 permissions:
   contents: read
@@ -14,10 +21,13 @@ jobs:
   pypi-publish:
     name: upload release to PyPI
     runs-on: ubuntu-latest
+    if: github.event_name == 'release'
     permissions:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - uses: astral-sh/setup-uv@v7
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
@@ -26,24 +36,69 @@ jobs:
   docs-publish:
     name: Publish documentation to GitHub Pages
     runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.14"
     needs: pypi-publish
     environment:
-      name: github-pages
+      name: ${{ github.event_name == 'release' && 'github-pages' || 'github-pages-preview' }}
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - name: Compute target ref
+        id: target
+        run: |
+          echo "ref_name=${{ inputs.ref || github.ref_name }}" >> "$GITHUB_OUTPUT"
+          if [ -n "${{ inputs.pr }}" ]; then
+            echo "pr_number=${{ inputs.pr }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Detect pull request for preview
+        id: preview
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          ref_name="${{ steps.target.outputs.ref_name }}"
+          pr="${{ steps.target.outputs.pr_number }}"
+          if [ -z "$pr" ]; then
+            pr="$(gh pr list --head "$ref_name" --state all --json number --jq '.[0].number')"
+          fi
+          if [ -n "$pr" ]; then
+            echo "docs_subdir=_preview/${pr}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=${pr}" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/configure-pages@v5
       - uses: astral-sh/setup-uv@v7
       - env:
           FORCE_COLOR: 1
           COLUMNS: 90
-        run:
+          UV_COLOR: always
+          PYTHONPATH: src
+        run: |
+          unset NO_COLOR
           make docs
+      - name: Stage documentation artifact
+        run: |
+          out_dir="site"
+          subdir="${{ steps.preview.outputs.docs_subdir }}"
+          rm -rf "$out_dir"
+          if [ -n "$subdir" ]; then
+            mkdir -p "$out_dir/$subdir"
+            cp -a docs/_build/html/. "$out_dir/$subdir/"
+          else
+            mkdir -p "$out_dir"
+            cp -a docs/_build/html/. "$out_dir/"
+          fi
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: docs/_build/html
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4
       - name: Summarize documentation URL
         run: |
-          echo "Documentation published at: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          url="${{ steps.deployment.outputs.page_url }}"
+          if [ -n "${{ steps.preview.outputs.docs_subdir }}" ]; then
+            url="${url%/}/${{ steps.preview.outputs.docs_subdir }}"
+          fi
+          echo "Documentation published at: ${url}" >> "$GITHUB_STEP_SUMMARY"
