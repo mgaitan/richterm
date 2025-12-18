@@ -38,7 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       UV_PYTHON: "3.14"
-    needs: pypi-publish
     environment:
       name: ${{ github.event_name == 'release' && 'github-pages' || 'github-pages-preview' }}
       url: ${{ steps.deployment.outputs.page_url }}
