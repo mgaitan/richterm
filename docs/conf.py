@@ -31,6 +31,7 @@ richterm_shown_command = None
 
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
+html_baseurl = "https://mgaitan.github.io/richterm/"
 
 
 myst_url_schemes = {

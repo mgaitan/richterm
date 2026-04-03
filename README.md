@@ -7,7 +7,9 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/mgaitan/richterm/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/mgaitan/richterm/blob/main/LICENSE)
 
-`richterm` turns arbitrary terminal commands into Rich-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
+`richterm` turns arbitrary terminal commands into [Rich](https://github.com/Textualize/rich)-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
+
+This project was created and is still maintained with [python-package-copier-template](https://github.com/mgaitan/python-package-copier-template).
 
 ## Quick start
 
@@ -79,7 +81,6 @@ Or in reStructuredText:
 .. richterm:: python -m rich --force-terminal --no-color-system example
 ```
 
-
 The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal block for non-HTML builders. The `:prompt:` and `:hide-command:` options mirror the CLI flags.
 
 ## Development
@@ -92,8 +93,7 @@ uv run --extra sphinx pytest
 
 Or directly `make test`
 
-
-Build the documentation (which exercises the directive itself):
+Build the documentation, which exercises the directive itself:
 
 ```bash
 make docs

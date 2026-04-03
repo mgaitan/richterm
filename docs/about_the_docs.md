@@ -6,14 +6,16 @@ with [myst-parser](https://myst-parser.readthedocs.io/).
 The theme used is
 [sphinx-book-theme](https://sphinx-book-theme.readthedocs.io/en/stable/).
 
+The project itself was created and is still maintained with [python-package-copier-template](https://github.com/mgaitan/python-package-copier-template).
+
 ## How to contribute
 
-The documentation is written in [myst-parser](https://myst-parser.readthedocs.io/en/latest/syntax/typography.html) Markdown.
+The documentation is written in [MyST Markdown](https://myst-parser.readthedocs.io/en/latest/syntax/typography.html).
 
-The myst extensions
+The MyST extensions
 [colon_fences](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#code-fences-using-colons),
-[linkify](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#linkify)
-and [deflist](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#definition-lists) are enabled and you can also use the extra [content blocks](https://sphinx-book-theme.readthedocs.io/en/stable/content/content-blocks.html)
+[linkify](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#linkify),
+and [deflist](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#definition-lists) are enabled, and you can also use the extra [content blocks](https://sphinx-book-theme.readthedocs.io/en/stable/content/content-blocks.html)
 from our theme.
 
 In addition, you can use all the [directives available in Sphinx](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html),
@@ -23,7 +25,7 @@ We also ship [richterm](https://github.com/mgaitan/richterm) to capture CLI outp
 
 ## Including diagrams
 
-We support [mermaid diagrams](https://mermaid.js.org/), powered by [sphinxcontrib-mermaid](https://github.com/mgaitan/sphinxcontrib-mermaid):
+We support [Mermaid diagrams](https://mermaid.js.org/), powered by [sphinxcontrib-mermaid](https://github.com/mgaitan/sphinxcontrib-mermaid):
 
 ```{mermaid}
 :align: center
@@ -33,7 +35,7 @@ graph LR;
 
 with this syntax:
 
-````markdown
+````md
 ```{mermaid}
 :align: center
 graph LR;
@@ -43,42 +45,41 @@ graph LR;
 
 ## Linking to the repo
 
-There is shortcut to add links to the monorepo at Github, by prefixing `gh:` plus the
+There is a shortcut for links to the GitHub repository by prefixing `gh:` plus the
 relative path. For example:
 
-```markdown
+```md
 [ci workflow](gh:.github/workflows/ci.yml)
 ```
 
-Produces this link: [e2e workflow](gh:.github/workflows/ci.yml)
+Produces this link: [ci workflow](gh:.github/workflows/ci.yml)
 
-Check `myst_url_schemes` at [docs/conf.py](gh:docs/conf.py) for details on how it's implemented.
-
+Check `myst_url_schemes` at [docs/conf.py](gh:docs/conf.py) for details on how it is implemented.
 
 ## How to build the documentation
 
-From the root directory run
+From the project root run:
 
 ```bash
-$ make docs
+make docs
 ```
 
-This will run `sphinx-build` using `uv run` with the docs requirements.
+This runs `sphinx-build` using `uv run` with the docs requirements.
+It should exit without errors or warnings.
 
-It should exit without error nor warnings.
-
-If you want to check everything looks ok, open the generated html in the browser.
+If you want to check everything looks right in a browser, run:
 
 ```bash
-$ make docs-open
-````
+make docs-open
+```
 
-Also you can build the documentation in `epub` with `make docs-epub`
+You can also build EPUB output with `make docs-epub`.
 
 ## How the documentation is published online
 
-- GitHub Actions workflow: `[](gh:.github/workflows/cd.yml)` publishes docs to GitHub Pages.
+- GitHub Actions workflow: [`.github/workflows/cd.yml`](gh:.github/workflows/cd.yml) publishes docs to GitHub Pages.
 - Triggers:
-  - On releases (PyPI publish + docs deploy).
-  - Manual via `workflow_dispatch` (used for the initial docs build and any ad-hoc redeploy).
-- To trigger manually from your repo: `gh workflow run cd.yml --ref main` (requires `gh` CLI auth) or use the Actions UI.
+  - on releases,
+  - on pull requests that change docs-related files, publishing a preview under `/_preview/pr-<PR_NUMBER>/`,
+  - manually via `workflow_dispatch`.
+- To trigger it manually from your repo: `gh workflow run cd.yml --ref main` or use the Actions UI.

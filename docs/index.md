@@ -7,7 +7,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/mgaitan/richterm/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/mgaitan/richterm/blob/main/LICENSE)
 
-`richterm` turns arbitrary terminal commands into Rich-rendered SVG transcripts. Use it from the command line or embed live terminal captures in Sphinx documentation.
+`richterm` turns arbitrary terminal commands into [Rich](https://github.com/Textualize/rich)-rendered SVG transcripts. Use it from the command line or embed live terminal captures in Sphinx documentation.
 
 ## Command-line quick start
 
@@ -39,7 +39,7 @@ uv tool install richterm
 
 ## Sphinx directive
 
-Enable the extension in ``conf.py``:
+Enable the extension in `conf.py`:
 
 ```python
 extensions = [
@@ -67,15 +67,50 @@ Or in reStructuredText:
 :shown-command: python -m rich rainbow
 ```
 
-The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with ``:prompt:``, hide the command with ``:hide-command:``, or swap the displayed command while running another with ``:shown-command:`` (falls back to ``richterm_shown_command`` if set).
-If you hide the command, any ``:shown-command:`` value is ignored (a warning is emitted).
+The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with `:prompt:`, hide the command with `:hide-command:`, or swap the displayed command while running another with `:shown-command:` (falls back to `richterm_shown_command` if set).
+If you hide the command, any `:shown-command:` value is ignored and a warning is emitted.
 
+## Documentation Map (Diataxis)
+
+This project follows the [Diataxis](https://diataxis.fr/) framework:
+
+- Tutorials: learning-oriented, step-by-step.
+- How-to guides: goal-oriented operational procedures.
+- Reference: factual, lookup-first technical details.
+- Explanation: context, rationale, and design choices.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Documentation
+:caption: Tutorials
+
+getting_started.md
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: How-to Guides
+
+development_workflow.md
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Reference
+
+configuration.md
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Explanation
+
+about_the_docs.md
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Project Policies
 
 ../CONTRIBUTING.md
 ../CODE_OF_CONDUCT.md
-about_the_docs.md
 ```

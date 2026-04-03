@@ -43,7 +43,11 @@ def test_default_output_path_format(monkeypatch) -> None:
     assert path.suffix == ".svg"
 
 
-def test_run_command_sets_colorful_environment(mocker) -> None:
+def test_run_command_sets_colorful_environment(mocker, monkeypatch) -> None:
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    monkeypatch.delenv("RICHTERM_DISABLE_COLOR_HINT", raising=False)
+    for key in ("FORCE_COLOR", "CLICOLOR_FORCE", "PY_COLORS", "TTY_COMPATIBLE"):
+        monkeypatch.delenv(key, raising=False)
     completed = CompletedProcess(args=["echo"], returncode=0, stdout="")
     mock_run = mocker.patch("richterm._core.subprocess.run", return_value=completed)
     run_command(["echo", "hi"])

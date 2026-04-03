@@ -62,7 +62,6 @@ def test_cli_shown_command_override(tmp_path: Path) -> None:
     output_path = tmp_path / "shown.svg"
     exit_code = main(
         [
-            # mutually exclusive with --hide-command
             "--shown-command",
             "echo pretend",
             "-o",
