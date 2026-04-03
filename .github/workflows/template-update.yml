@@ -23,7 +23,7 @@ jobs:
           echo "before=$before" >> "$GITHUB_OUTPUT"
 
       - name: Refresh from template
-        run: uvx git+https://github.com/mgaitan/python-package-copier-template -- .
+        run: uvx --with git+https://github.com/mgaitan/python-package-copier-template --with copier-template-extensions copier update --trust --defaults --skip-tasks .
 
       - name: Capture template version (after)
         id: template-version-after
@@ -37,10 +37,10 @@ jobs:
           commit-message: "chore: update project template"
           title: "chore: update project template to ${{ steps.template-version-after.outputs.after }}"
           body: |
-            Automated template refresh via `uvx copier update --trust --defaults .`.
+            Automated template refresh via `uvx --with git+https://github.com/mgaitan/python-package-copier-template --with copier-template-extensions copier update --trust --defaults --skip-tasks .`.
 
             Template version:
-            - before: {% raw %}${{ steps.template-version-before.outputs.before }}
+            - before: ${{ steps.template-version-before.outputs.before }}
             - after: ${{ steps.template-version-after.outputs.after }}
 
             Template releases: https://github.com/mgaitan/python-package-copier-template/releases

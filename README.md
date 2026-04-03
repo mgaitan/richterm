@@ -79,7 +79,6 @@ Or in reStructuredText:
 .. richterm:: python -m rich --force-terminal --no-color-system example
 ```
 
-
 The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal block for non-HTML builders. The `:prompt:` and `:hide-command:` options mirror the CLI flags.
 
 ## Development
@@ -92,8 +91,7 @@ uv run --extra sphinx pytest
 
 Or directly `make test`
 
-
-Build the documentation (which exercises the directive itself):
+Build the documentation, which exercises the directive itself:
 
 ```bash
 make docs

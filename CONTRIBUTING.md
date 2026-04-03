@@ -41,7 +41,7 @@ As usual:
 **Before committing:**
 
 
-1. run `make tests` to run the tests (fix any issue)
+1. run `uv run pytest` to run the tests (fix any issue)
 1. run `uv run ruff check --fix` to check everything (fix any warning)
 1. run `uv run ruff format` to auto-format the code
 1. if you updated the documentation or the project dependencies:
