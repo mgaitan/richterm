@@ -24,7 +24,7 @@ uvx richterm
 Key options:
 
 - `--prompt`: Rich markup shown before the command (defaults to `$`).
-- `--theme`: choose the Rich terminal export theme (`default`, `monokai`, `dimmed-monokai`, `night-owlish`, or `svg-export`).
+- `--theme`: choose the Rich terminal export theme (`default`, `light`, `monokai`, `dimmed-monokai`, `night-owlish`, or `svg-export`).
 - `--hide-command`: omit the prompt/command from the SVG.
 - `-o/--output`: select the SVG destination; otherwise `rich_term_<TIMESTAMP>.svg` is created in the working directory.
 - `--shown-command`: render a different command string than the one executed (useful when the real invocation is noisy or repetitive).

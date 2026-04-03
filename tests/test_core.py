@@ -47,6 +47,7 @@ def test_render_svg_uses_selected_theme() -> None:
 def test_available_terminal_themes_are_stable() -> None:
     assert available_terminal_themes() == (
         "default",
+        "light",
         "monokai",
         "dimmed-monokai",
         "night-owlish",

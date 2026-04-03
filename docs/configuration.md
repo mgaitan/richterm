@@ -5,7 +5,7 @@ This chapter is a lookup reference for environment variables that affect `richte
 ```{glossary}
 RICHTERM_THEME
   Sets the default SVG terminal theme for `richterm`.
-  Supported values are `default`, `monokai`, `dimmed-monokai`, `night-owlish`, and `svg-export`.
+  Supported values are `default`, `light`, `monokai`, `dimmed-monokai`, `night-owlish`, and `svg-export`.
   The command-line `--theme` option and the directive `:theme:` option take precedence over this environment variable.
 
 RICHTERM_DISABLE_COLOR_HINT

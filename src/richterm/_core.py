@@ -54,7 +54,8 @@ _COLOR_ENV_DEFAULTS: dict[str, str] = {
 }
 
 _TERMINAL_THEMES: dict[str, TerminalTheme] = {
-    "default": DEFAULT_TERMINAL_THEME,
+    "default": SVG_EXPORT_THEME,
+    "light": DEFAULT_TERMINAL_THEME,
     "monokai": MONOKAI,
     "dimmed-monokai": DIMMED_MONOKAI,
     "night-owlish": NIGHT_OWLISH,
