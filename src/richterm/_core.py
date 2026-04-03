@@ -12,6 +12,14 @@ from pathlib import Path
 from subprocess import CompletedProcess
 
 from rich.console import Console
+from rich.terminal_theme import (
+    DEFAULT_TERMINAL_THEME,
+    DIMMED_MONOKAI,
+    MONOKAI,
+    NIGHT_OWLISH,
+    SVG_EXPORT_THEME,
+    TerminalTheme,
+)
 from rich.text import Text
 
 
@@ -21,10 +29,15 @@ class RenderOptions:
 
     prompt: str = "$"
     hide_command: bool = False
+    theme: str = "default"
 
 
 class CommandExecutionError(RuntimeError):
     """Raised when a command cannot be executed."""
+
+
+class InvalidThemeError(ValueError):
+    """Raised when a requested terminal theme is not supported."""
 
 
 _COLOR_ENV_DEFAULTS: dict[str, str] = {
@@ -33,6 +46,44 @@ _COLOR_ENV_DEFAULTS: dict[str, str] = {
     "PY_COLORS": "1",
     "TTY_COMPATIBLE": "1",
 }
+
+_TERMINAL_THEMES: dict[str, TerminalTheme] = {
+    "default": DEFAULT_TERMINAL_THEME,
+    "monokai": MONOKAI,
+    "dimmed-monokai": DIMMED_MONOKAI,
+    "night-owlish": NIGHT_OWLISH,
+    "svg-export": SVG_EXPORT_THEME,
+}
+
+
+def available_terminal_themes() -> tuple[str, ...]:
+    """Return the supported terminal theme names."""
+
+    return tuple(_TERMINAL_THEMES)
+
+
+def default_terminal_theme_name(env: Mapping[str, str] | None = None) -> str:
+    """Return the default terminal theme name from *env* or the built-in fallback."""
+
+    env_vars = os.environ if env is None else env
+    return env_vars.get("RICHTERM_THEME", "default")
+
+
+def normalize_terminal_theme(theme: str) -> str:
+    """Return a canonical theme name or raise if it is unsupported."""
+
+    normalized = theme.strip().lower().replace("_", "-")
+    if normalized in _TERMINAL_THEMES:
+        return normalized
+
+    available = ", ".join(available_terminal_themes())
+    raise InvalidThemeError(f"Unknown theme '{theme}'. Available themes: {available}")
+
+
+def get_terminal_theme(theme: str) -> TerminalTheme:
+    """Resolve *theme* to a Rich terminal theme."""
+
+    return _TERMINAL_THEMES[normalize_terminal_theme(theme)]
 
 
 def _prepare_environment(env: Mapping[str, str] | None) -> dict[str, str]:
@@ -106,7 +157,7 @@ def render_svg(command_display: str | None, output: str, options: RenderOptions)
     if output:
         console.print(Text.from_ansi(output), end="")
 
-    return console.export_svg(title="")
+    return console.export_svg(title="", theme=get_terminal_theme(options.theme))
 
 
 def command_to_display(command: Sequence[str]) -> str:

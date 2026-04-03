@@ -7,9 +7,14 @@ import pytest
 from richterm import _default_output_path
 from richterm._core import (
     CommandExecutionError,
+    InvalidThemeError,
     RenderOptions,
     _prepare_environment,
+    available_terminal_themes,
     command_to_display,
+    default_terminal_theme_name,
+    get_terminal_theme,
+    normalize_terminal_theme,
     render_svg,
     run_command,
 )
@@ -30,6 +35,40 @@ def test_render_svg_hides_command_when_requested() -> None:
     svg = render_svg("echo hi", "hi\n", RenderOptions(prompt="$", hide_command=True))
     assert "echo hi" not in svg
     assert "hi" in svg
+
+
+def test_render_svg_uses_selected_theme() -> None:
+    svg = render_svg("echo hi", "hi\n", RenderOptions(theme="monokai"))
+    assert 'fill="#0c0c0c"' in svg
+
+
+def test_available_terminal_themes_are_stable() -> None:
+    assert available_terminal_themes() == (
+        "default",
+        "monokai",
+        "dimmed-monokai",
+        "night-owlish",
+        "svg-export",
+    )
+
+
+def test_normalize_terminal_theme_accepts_aliases() -> None:
+    assert normalize_terminal_theme("DIMMED_MONOKAI") == "dimmed-monokai"
+
+
+def test_normalize_terminal_theme_rejects_unknown_name() -> None:
+    with pytest.raises(InvalidThemeError):
+        normalize_terminal_theme("does-not-exist")
+
+
+def test_default_terminal_theme_name_from_environment(monkeypatch) -> None:
+    monkeypatch.setenv("RICHTERM_THEME", "monokai")
+    assert default_terminal_theme_name() == "monokai"
+
+
+def test_get_terminal_theme_returns_rich_terminal_theme() -> None:
+    theme = get_terminal_theme("svg-export")
+    assert theme.background_color.red == 41
 
 
 def test_run_command_raises_for_missing_binary() -> None:

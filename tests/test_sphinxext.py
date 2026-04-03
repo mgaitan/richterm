@@ -41,11 +41,13 @@ def make_directive(  # noqa: PLR0913
     command: str,
     *,
     prompt: str | None = None,
+    theme: str | None = None,
     hide_option: bool = False,
     config_prompt: str = "$",
     config_hide: bool = False,
     shown_command: str | None = None,
     config_shown: str | None = None,
+    config_theme: str = "default",
     with_env: bool = True,
     builder_format: str | None = None,
 ) -> RichTermDirective:
@@ -57,6 +59,7 @@ def make_directive(  # noqa: PLR0913
                 richterm_prompt=config_prompt,
                 richterm_hide_command=config_hide,
                 richterm_shown_command=config_shown,
+                richterm_theme=config_theme,
             )
         )
         if builder_format is not None:
@@ -75,6 +78,8 @@ def make_directive(  # noqa: PLR0913
     options: dict[str, object] = {}
     if prompt is not None:
         options["prompt"] = RichTermDirective.option_spec["prompt"](prompt)
+    if theme is not None:
+        options["theme"] = RichTermDirective.option_spec["theme"](theme)
     if hide_option:
         options["hide-command"] = RichTermDirective.option_spec["hide-command"](None)
     if shown_command is not None:
@@ -99,8 +104,16 @@ def test_setup_registers_extension(mocker) -> None:
     app.add_config_value.assert_any_call("richterm_prompt", "$", "env")
     app.add_config_value.assert_any_call("richterm_hide_command", False, "env")
     app.add_config_value.assert_any_call("richterm_shown_command", None, "env")
+    app.add_config_value.assert_any_call("richterm_theme", "default", "env")
     app.add_directive.assert_called_with("richterm", RichTermDirective)
     assert config["version"] == get_version()
+
+
+def test_setup_uses_environment_theme_default(mocker, monkeypatch) -> None:
+    monkeypatch.setenv("RICHTERM_THEME", "monokai")
+    app = mocker.Mock()
+    setup(app)
+    app.add_config_value.assert_any_call("richterm_theme", "monokai", "env")
 
 
 def test_directive_renders_svg() -> None:
@@ -177,6 +190,39 @@ def test_directive_shown_command_ignored_when_hidden(mocker) -> None:
     mock_warning.assert_called_once()
 
 
+def test_directive_theme_option_changes_svg_background() -> None:
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        theme="monokai",
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    assert 'fill="#0c0c0c"' in nodes[0].astext()
+
+
+def test_directive_theme_from_config() -> None:
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        config_theme="svg-export",
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    assert 'fill="#292929"' in nodes[0].astext()
+
+
+def test_directive_theme_option_overrides_config() -> None:
+    directive = make_directive(
+        "python -c \"print('hi')\"",
+        theme="monokai",
+        config_theme="svg-export",
+    )
+    nodes = directive.run()
+    assert len(nodes) == 1
+    svg_text = nodes[0].astext()
+    assert 'fill="#0c0c0c"' in svg_text
+    assert 'fill="#292929"' not in svg_text
+
+
 def test_directive_failure_raises_sphinx_error() -> None:
     directive = make_directive('python -c "import sys; sys.exit(2)"')
     with pytest.raises(SphinxError):
@@ -196,6 +242,7 @@ def test_directive_defaults_without_env() -> None:
     assert config.richterm_prompt == "$"
     assert config.richterm_hide_command is False
     assert config.richterm_shown_command is None
+    assert config.richterm_theme == "default"
 
 
 def test_directive_requires_command() -> None:
@@ -206,6 +253,12 @@ def test_directive_requires_command() -> None:
 
 def test_directive_invalid_command_syntax() -> None:
     directive = make_directive('python -c "unterminated')
+    with pytest.raises(DirectiveError):
+        directive.run()
+
+
+def test_directive_invalid_theme() -> None:
+    directive = make_directive("python -c \"print('x')\"", theme="unknown-theme")
     with pytest.raises(DirectiveError):
         directive.run()
 
