@@ -1,4 +1,4 @@
-# Getting Started (Tutorial)
+# Getting Started
 
 This tutorial walks through the main user-facing flow: run `richterm`, generate an SVG, and then install it permanently if you want it around.
 
@@ -22,10 +22,11 @@ uvx richterm -o demo.svg python -c "print('hello')"
 
 ## 3. Customize what appears in the transcript
 
-You can tweak the prompt, hide the command, or show a friendlier command than the one actually executed:
+You can tweak the prompt, pick a different export theme, hide the command, or show a friendlier command than the one actually executed:
 
 ```bash
 uvx richterm --prompt "[bold blue]$" git status --short
+uvx richterm --theme monokai python -m rich --force-terminal rainbow
 uvx richterm --hide-command python -c "print('secret command')"
 uvx richterm --shown-command "pytest -q" python -c "print('fixture output')"
 ```

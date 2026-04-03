@@ -12,8 +12,12 @@ from pathlib import Path
 
 from ._core import (
     CommandExecutionError,
+    InvalidThemeError,
     RenderOptions,
+    available_terminal_themes,
     command_to_display,
+    default_terminal_theme_name,
+    normalize_terminal_theme,
     render_svg,
     run_command,
 )
@@ -60,6 +64,16 @@ def get_parser() -> argparse.ArgumentParser:
         default="$",
         help="Prompt to display before the command. Accepts Rich markup.",
     )
+    parser.add_argument(
+        "--theme",
+        default=None,
+        metavar="THEME",
+        help=(
+            "Terminal theme used for SVG export. "
+            f"Supported values: {', '.join(available_terminal_themes())}. "
+            "Defaults to $RICHTERM_THEME or 'default'."
+        ),
+    )
     visibility.add_argument(
         "--shown-command",
         dest="shown_command",
@@ -80,6 +94,7 @@ class CLIOptions:
     hide_command: bool
     output: Path | None
     shown_command: str | None
+    theme: str
 
 
 def _parse_args(args: Sequence[str] | None) -> CLIOptions:
@@ -87,12 +102,17 @@ def _parse_args(args: Sequence[str] | None) -> CLIOptions:
     parsed = parser.parse_args(args=args)
     if not parsed.command:
         parser.error("a command to execute is required")
+    try:
+        theme = normalize_terminal_theme(parsed.theme or default_terminal_theme_name())
+    except InvalidThemeError as exc:
+        parser.error(str(exc))
     return CLIOptions(
         command=parsed.command,
         prompt=parsed.prompt,
         hide_command=parsed.hide_command,
         output=parsed.output,
         shown_command=parsed.shown_command,
+        theme=theme,
     )
 
 
@@ -117,7 +137,7 @@ def main(args: Sequence[str] | None = None) -> int:
     svg = render_svg(
         command_display,
         transcript,
-        RenderOptions(prompt=options.prompt, hide_command=options.hide_command),
+        RenderOptions(prompt=options.prompt, hide_command=options.hide_command, theme=options.theme),
     )
     output_path.write_text(svg, encoding="utf-8")
 

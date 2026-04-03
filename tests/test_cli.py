@@ -83,6 +83,76 @@ def test_cli_shown_command_rejects_hide_command() -> None:
         main(["--shown-command", "echo pretend", "--hide-command", "echo", "hi"])
 
 
+def test_cli_theme_changes_svg_background(tmp_path: Path) -> None:
+    output_path = tmp_path / "monokai.svg"
+    exit_code = main(
+        [
+            "--theme",
+            "monokai",
+            "-o",
+            str(output_path),
+            "python",
+            "-c",
+            "print('hello')",
+        ]
+    )
+    assert exit_code == 0
+    svg = output_path.read_text(encoding="utf-8")
+    assert 'fill="#0c0c0c"' in svg
+
+
+def test_cli_theme_uses_environment_default(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("RICHTERM_THEME", "monokai")
+    output_path = tmp_path / "env-theme.svg"
+    exit_code = main(
+        [
+            "-o",
+            str(output_path),
+            "python",
+            "-c",
+            "print('hello')",
+        ]
+    )
+    assert exit_code == 0
+    svg = output_path.read_text(encoding="utf-8")
+    assert 'fill="#0c0c0c"' in svg
+
+
+def test_cli_theme_option_overrides_environment(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("RICHTERM_THEME", "monokai")
+    output_path = tmp_path / "override-theme.svg"
+    exit_code = main(
+        [
+            "--theme",
+            "svg-export",
+            "-o",
+            str(output_path),
+            "python",
+            "-c",
+            "print('hello')",
+        ]
+    )
+    assert exit_code == 0
+    svg = output_path.read_text(encoding="utf-8")
+    assert 'fill="#292929"' in svg
+    assert 'fill="#0c0c0c"' not in svg
+
+
+def test_cli_rejects_unknown_theme(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit):
+        main(["--theme", "unknown-theme", "echo", "hello"])
+    captured = capsys.readouterr()
+    assert "Unknown theme 'unknown-theme'" in captured.err
+
+
+def test_cli_rejects_unknown_theme_from_environment(capsys: pytest.CaptureFixture[str], monkeypatch) -> None:
+    monkeypatch.setenv("RICHTERM_THEME", "unknown-theme")
+    with pytest.raises(SystemExit):
+        main(["echo", "hello"])
+    captured = capsys.readouterr()
+    assert "Unknown theme 'unknown-theme'" in captured.err
+
+
 def test_cli_non_zero_exit_code(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     output_path = tmp_path / "failure.svg"
     exit_code = main(

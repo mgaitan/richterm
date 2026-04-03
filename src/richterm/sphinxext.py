@@ -14,7 +14,16 @@ from sphinx.errors import SphinxError
 from sphinx.util import logging
 
 from . import get_version
-from ._core import CommandExecutionError, RenderOptions, command_to_display, render_svg, run_command
+from ._core import (
+    CommandExecutionError,
+    InvalidThemeError,
+    RenderOptions,
+    command_to_display,
+    default_terminal_theme_name,
+    normalize_terminal_theme,
+    render_svg,
+    run_command,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +36,7 @@ class RichTermDirective(Directive):
     final_argument_whitespace = True
     option_spec: ClassVar[dict[str, Callable[[str | None], object]]] = {
         "prompt": directives.unchanged,
+        "theme": directives.unchanged,
         "shown-command": directives.unchanged,
         "hide-command": directives.flag,
     }
@@ -35,15 +45,22 @@ class RichTermDirective(Directive):
     def _get_config(self) -> SimpleNamespace:
         env = getattr(self.state.document.settings, "env", None)
         if env is None:
-            return SimpleNamespace(richterm_prompt="$", richterm_hide_command=False, richterm_shown_command=None)
+            return SimpleNamespace(
+                richterm_prompt="$",
+                richterm_hide_command=False,
+                richterm_shown_command=None,
+                richterm_theme="default",
+            )
         config = getattr(env, "config", None)
         prompt = getattr(config, "richterm_prompt", "$")
         hide = getattr(config, "richterm_hide_command", False)
         shown_command = getattr(config, "richterm_shown_command", None)
+        theme = getattr(config, "richterm_theme", "default")
         return SimpleNamespace(
             richterm_prompt=prompt,
             richterm_hide_command=hide,
             richterm_shown_command=shown_command,
+            richterm_theme=theme,
         )
 
     def run(self) -> list[nodes.Node]:
@@ -54,6 +71,11 @@ class RichTermDirective(Directive):
         config = self._get_config()
         prompt = self.options.get("prompt", config.richterm_prompt)
         hide_command = "hide-command" in self.options or bool(config.richterm_hide_command)
+        theme_option = self.options.get("theme")
+        try:
+            theme = normalize_terminal_theme(theme_option or config.richterm_theme)
+        except InvalidThemeError as exc:
+            raise self.severe(str(exc)) from exc
         shown_command_option = self.options.get("shown-command")
         shown_command = shown_command_option if shown_command_option is not None else config.richterm_shown_command
         if hide_command and shown_command:
@@ -77,7 +99,7 @@ class RichTermDirective(Directive):
         svg = render_svg(
             command_display,
             transcript,
-            RenderOptions(prompt=prompt, hide_command=hide_command),
+            RenderOptions(prompt=prompt, hide_command=hide_command, theme=theme),
         )
 
         raw_node = nodes.raw("", svg, format="html")
@@ -94,6 +116,7 @@ def setup(app: Sphinx) -> dict[str, object]:
     app.add_config_value("richterm_prompt", "$", "env")
     app.add_config_value("richterm_hide_command", False, "env")
     app.add_config_value("richterm_shown_command", None, "env")
+    app.add_config_value("richterm_theme", default_terminal_theme_name(), "env")
     app.add_directive("richterm", RichTermDirective)
     return {
         "version": get_version(),

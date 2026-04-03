@@ -1,8 +1,13 @@
-# Configuration (Reference)
+# Configuration
 
 This chapter is a lookup reference for environment variables that affect `richterm` behavior directly.
 
 ```{glossary}
+RICHTERM_THEME
+  Sets the default SVG terminal theme for `richterm`.
+  Supported values are `default`, `light`, `monokai`, `dimmed-monokai`, `night-owlish`, and `svg-export`.
+  The command-line `--theme` option and the directive `:theme:` option take precedence over this environment variable.
+
 RICHTERM_DISABLE_COLOR_HINT
   Disables the extra color-friendly environment hints that `richterm` normally injects before running a command.
   When set to `1`, `richterm` leaves the child environment unchanged.
@@ -18,5 +23,5 @@ FORCE_COLOR
 
 TERM
   Terminal capability identifier passed to the executed command.
-  If `TERM` is missing or set to `dumb`, `richterm` defaults it to `xterm-256color` to improve captured styling.
+  If it is missing or set to `dumb`, `richterm` defaults it to `xterm-256color` to improve captured styling.
 ```
