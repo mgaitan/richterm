@@ -9,6 +9,8 @@
 
 `richterm` turns arbitrary terminal commands into [Rich](https://github.com/Textualize/rich)-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
 
+This project was created and is still maintained with [python-package-copier-template](https://github.com/mgaitan/python-package-copier-template).
+
 ## Quick start
 
 Run the CLI without installing anything permanently:

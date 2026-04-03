@@ -6,6 +6,8 @@ with [myst-parser](https://myst-parser.readthedocs.io/).
 The theme used is
 [sphinx-book-theme](https://sphinx-book-theme.readthedocs.io/en/stable/).
 
+The project itself was created and is still maintained with [python-package-copier-template](https://github.com/mgaitan/python-package-copier-template).
+
 ## How to contribute
 
 The documentation is written in [MyST Markdown](https://myst-parser.readthedocs.io/en/latest/syntax/typography.html).
