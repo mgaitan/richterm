@@ -1,49 +1,60 @@
 # Getting Started (Tutorial)
 
-This tutorial gives you a complete first pass through local setup, checks, and docs.
+This tutorial walks through the main user-facing flow: run `richterm`, generate an SVG, and then install it permanently if you want it around.
 
-## 1. Create the environment
+## 1. Run `richterm` without installing it
 
-From the project root:
+The quickest way to try the tool is with `uvx`:
+
+```bash
+uvx richterm echo "hello from richterm"
+```
+
+That command runs `echo "hello from richterm"`, renders the transcript as an SVG, and writes a file named like `rich_term_20260403_153000.svg` in the current directory.
+
+## 2. Pick an explicit output path
+
+Use `-o` when you want the SVG somewhere predictable:
+
+```bash
+uvx richterm -o demo.svg python -c "print('hello')"
+```
+
+## 3. Customize what appears in the transcript
+
+You can tweak the prompt, hide the command, or show a friendlier command than the one actually executed:
+
+```bash
+uvx richterm --prompt "[bold blue]$" git status --short
+uvx richterm --hide-command python -c "print('secret command')"
+uvx richterm --shown-command "pytest -q" python -c "print('fixture output')"
+```
+
+## 4. Install it as a tool
+
+If you plan to use `richterm` regularly, install it once:
+
+```bash
+uv tool install richterm
+```
+
+After that, invoke it directly:
+
+```bash
+richterm --help
+```
+
+## 5. Run from a local checkout when contributing
+
+If you are working on the project itself, sync the environment and run from source:
 
 ```bash
 uv sync
-```
-
-This resolves dependencies and creates the local virtual environment.
-
-## 2. Run the CLI from source
-
-The repository ships the `richterm` CLI:
-
-```bash
 uv run richterm --help
 ```
 
-When invoking modules directly from source, set {term}`PYTHONPATH` so imports resolve cleanly:
+For module execution from the checkout, you can also use:
 
 ```bash
 PYTHONPATH=src uv run -m richterm --help
-```
-
-This is the same pattern used throughout the docs when examples need to execute the local checkout directly.
-## 3. Run quality checks
-
-```bash
-make qa
-make test
-```
-
-If `prek` is installed, `make qa` runs the local QA bundle with hooks.
-
-## 4. Build the documentation
-
-```bash
-make docs
-```
-
-To open generated HTML:
-
-```bash
-make docs-open
 ```

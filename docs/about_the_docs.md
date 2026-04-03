@@ -1,51 +1,83 @@
 # About this documentation
 
-This project ships documentation as a first-class artifact, not as an afterthought.
-The docs are generated with [Sphinx](https://www.sphinx-doc.org/) and [MyST](https://myst-parser.readthedocs.io/), use the
-[sphinx-book-theme](https://sphinx-book-theme.readthedocs.io/), and follow [Diataxis](https://diataxis.fr/):
+This documentation is built using [Sphinx](https://www.sphinx-doc.org/)
+with [myst-parser](https://myst-parser.readthedocs.io/).
 
-- tutorial content for onboarding,
-- how-to guides for operation,
-- reference for factual lookups,
-- explanation for rationale and tradeoffs.
+The theme used is
+[sphinx-book-theme](https://sphinx-book-theme.readthedocs.io/en/stable/).
 
-## Why this structure
+## How to contribute
 
-`richterm` has both a CLI and a Sphinx extension, so the documentation needs to support several jobs at once:
+The documentation is written in [MyST Markdown](https://myst-parser.readthedocs.io/en/latest/syntax/typography.html).
 
-- help new users run the tool quickly,
-- document the directive and its configuration accurately,
-- explain the development and release workflow for maintainers,
-- keep rationale close to the code and workflows that implement it.
+The MyST extensions
+[colon_fences](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#code-fences-using-colons),
+[linkify](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#linkify),
+and [deflist](https://myst-parser.readthedocs.io/en/latest/syntax/optional.html#definition-lists) are enabled, and you can also use the extra [content blocks](https://sphinx-book-theme.readthedocs.io/en/stable/content/content-blocks.html)
+from our theme.
 
-## Design decisions captured here
+In addition, you can use all the [directives available in Sphinx](https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html),
+as explained in [this guide](https://myst-parser.readthedocs.io/en/v4.0.0/using/intro.html#intro-writing).
 
-### Docs-as-code in the same repository
+We also ship [richterm](https://github.com/mgaitan/richterm) to capture CLI output as SVG in the docs.
 
-Documentation and implementation evolve together.
-Any behavioral change should update docs in the same PR.
+## Including diagrams
 
-### Build should fail on docs regressions
+We support [Mermaid diagrams](https://mermaid.js.org/), powered by [sphinxcontrib-mermaid](https://github.com/mgaitan/sphinxcontrib-mermaid):
 
-`make docs` runs Sphinx in warning-as-error mode so broken links or directives are caught early.
+```{mermaid}
+:align: center
+graph LR;
+    Hi-->there;
+```
 
-### Examples should be executable
+with this syntax:
 
-We ship [richterm](https://github.com/mgaitan/richterm) for CLI captures and
-[sphinxcontrib-mermaid](https://github.com/mgaitan/sphinxcontrib-mermaid) for diagrams.
+````md
+```{mermaid}
+:align: center
+graph LR;
+  Hi-->there;
+```
+````
 
-### Publishing is automated
+## Linking to the repo
 
-`gh:.github/workflows/cd.yml` deploys docs to GitHub Pages:
+There is a shortcut for links to the GitHub repository by prefixing `gh:` plus the
+relative path. For example:
 
-- release/manual runs publish canonical docs,
-- PRs with docs changes publish previews under
-  `https://mgaitan.github.io/richterm/_preview/pr-<PR_NUMBER>/`.
+```md
+[ci workflow](gh:.github/workflows/ci.yml)
+```
 
-For manual dispatch using `gh` CLI, authentication usually relies on {term}`GH_TOKEN`.
-Workflow internals rely on {term}`GITHUB_TOKEN`.
+Produces this link: [ci workflow](gh:.github/workflows/ci.yml)
 
-## Configuration and glossary
+Check `myst_url_schemes` at [docs/conf.py](gh:docs/conf.py) for details on how it is implemented.
 
-Environment variables used by commands, docs examples, or workflows are documented in [Configuration](configuration.md).
-When an env var appears in a chapter, reference it with `{term}` (for example {term}`PYTHONPATH`).
+## How to build the documentation
+
+From the project root run:
+
+```bash
+make docs
+```
+
+This runs `sphinx-build` using `uv run` with the docs requirements.
+It should exit without errors or warnings.
+
+If you want to check everything looks right in a browser, run:
+
+```bash
+make docs-open
+```
+
+You can also build EPUB output with `make docs-epub`.
+
+## How the documentation is published online
+
+- GitHub Actions workflow: [`.github/workflows/cd.yml`](gh:.github/workflows/cd.yml) publishes docs to GitHub Pages.
+- Triggers:
+  - on releases,
+  - on pull requests that change docs-related files, publishing a preview under `/_preview/pr-<PR_NUMBER>/`,
+  - manually via `workflow_dispatch`.
+- To trigger it manually from your repo: `gh workflow run cd.yml --ref main` or use the Actions UI.
