@@ -1,4 +1,4 @@
-# Development Workflow (How-to)
+# Development Workflow
 
 ```{include} ../CONTRIBUTING.md
 ```

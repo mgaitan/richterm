@@ -1,4 +1,4 @@
-# Getting Started (Tutorial)
+# Getting Started
 
 This tutorial walks through the main user-facing flow: run `richterm`, generate an SVG, and then install it permanently if you want it around.
 

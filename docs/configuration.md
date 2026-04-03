@@ -1,4 +1,4 @@
-# Configuration (Reference)
+# Configuration
 
 This chapter is a lookup reference for environment variables that affect `richterm` behavior directly.
 

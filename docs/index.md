@@ -81,35 +81,26 @@ The same ANSI-rich output can be rendered with different terminal themes:
 
 `````{tabs}
 ````{tab} default
-```{richterm} env PYTHONPATH=../src uv run python -c "from rich.console import Console; from rich.table import Table; console = Console(force_terminal=True); table = Table(title='Status'); table.add_column('Name', style='cyan'); table.add_column('State'); table.add_column('Value', justify='right', style='magenta'); table.add_row('build', '[green]ok[/green]', '42'); table.add_row('tests', '[yellow]warn[/yellow]', '3'); table.add_row('deploy', '[red]fail[/red]', '1'); console.print(table)"
-:shown-command: python demo.py
+```{richterm} env PYTHONPATH=../src uv run python -m rich --force-terminal rainbow
+:shown-command: python -m rich rainbow
 :theme: default
 ```
 ````
 
 ````{tab} monokai
-```{richterm} env PYTHONPATH=../src uv run python -c "from rich.console import Console; from rich.table import Table; console = Console(force_terminal=True); table = Table(title='Status'); table.add_column('Name', style='cyan'); table.add_column('State'); table.add_column('Value', justify='right', style='magenta'); table.add_row('build', '[green]ok[/green]', '42'); table.add_row('tests', '[yellow]warn[/yellow]', '3'); table.add_row('deploy', '[red]fail[/red]', '1'); console.print(table)"
-:shown-command: python demo.py
+```{richterm} env PYTHONPATH=../src uv run python -m rich --force-terminal rainbow
+:shown-command: python -m rich rainbow
 :theme: monokai
 ```
 ````
 
 ````{tab} night-owlish
-```{richterm} env PYTHONPATH=../src uv run python -c "from rich.console import Console; from rich.table import Table; console = Console(force_terminal=True); table = Table(title='Status'); table.add_column('Name', style='cyan'); table.add_column('State'); table.add_column('Value', justify='right', style='magenta'); table.add_row('build', '[green]ok[/green]', '42'); table.add_row('tests', '[yellow]warn[/yellow]', '3'); table.add_row('deploy', '[red]fail[/red]', '1'); console.print(table)"
-:shown-command: python demo.py
+```{richterm} env PYTHONPATH=../src uv run python -m rich --force-terminal rainbow
+:shown-command: python -m rich rainbow
 :theme: night-owlish
 ```
 ````
 `````
-
-## Documentation Map (Diataxis)
-
-This project follows the [Diataxis](https://diataxis.fr/) framework:
-
-- Tutorials: learning-oriented, step-by-step.
-- How-to guides: goal-oriented operational procedures.
-- Reference: factual, lookup-first technical details.
-- Explanation: context, rationale, and design choices.
 
 ```{toctree}
 :maxdepth: 2
