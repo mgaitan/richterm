@@ -39,6 +39,12 @@ class CommandExecutionError(RuntimeError):
 class InvalidThemeError(ValueError):
     """Raised when a requested terminal theme is not supported."""
 
+    def __init__(self, theme: str, available_themes: Sequence[str]) -> None:
+        self.theme = theme
+        self.available_themes = tuple(available_themes)
+        available = ", ".join(self.available_themes)
+        super().__init__(f"Unknown theme '{theme}'. Available themes: {available}")
+
 
 _COLOR_ENV_DEFAULTS: dict[str, str] = {
     "FORCE_COLOR": "1",
@@ -76,8 +82,7 @@ def normalize_terminal_theme(theme: str) -> str:
     if normalized in _TERMINAL_THEMES:
         return normalized
 
-    available = ", ".join(available_terminal_themes())
-    raise InvalidThemeError(f"Unknown theme '{theme}'. Available themes: {available}")
+    raise InvalidThemeError(theme, available_terminal_themes())
 
 
 def get_terminal_theme(theme: str) -> TerminalTheme:

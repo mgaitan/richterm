@@ -19,6 +19,8 @@ from richterm._core import (
     run_command,
 )
 
+SVG_EXPORT_BACKGROUND_RED = 41
+
 
 def test_command_to_display_quotes_arguments() -> None:
     assert command_to_display(["echo", "hello world"]) == "echo 'hello world'"
@@ -68,7 +70,7 @@ def test_default_terminal_theme_name_from_environment(monkeypatch) -> None:
 
 def test_get_terminal_theme_returns_rich_terminal_theme() -> None:
     theme = get_terminal_theme("svg-export")
-    assert theme.background_color.red == 41
+    assert theme.background_color.red == SVG_EXPORT_BACKGROUND_RED
 
 
 def test_run_command_raises_for_missing_binary() -> None:
