@@ -7,7 +7,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/mgaitan/richterm/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/mgaitan/richterm/blob/main/LICENSE)
 
-`richterm` turns arbitrary terminal commands into Rich-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
+`richterm` turns arbitrary terminal commands into [Rich](https://github.com/Textualize/rich)-rendered SVG images. Run it from the command line or embed live captures in Sphinx documentation with a dedicated directive.
 
 ## Quick start
 
