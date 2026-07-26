@@ -102,7 +102,7 @@ def test_setup_registers_extension(mocker) -> None:
     app = mocker.Mock()
     config = setup(app)
     app.add_config_value.assert_any_call("richterm_prompt", "$", "env")
-    app.add_config_value.assert_any_call("richterm_hide_command", False, "env")
+    app.add_config_value.assert_any_call("richterm_hide_command", False, "env")  # noqa: FBT003
     app.add_config_value.assert_any_call("richterm_shown_command", None, "env")
     app.add_config_value.assert_any_call("richterm_theme", "default", "env")
     app.add_directive.assert_called_with("richterm", RichTermDirective)

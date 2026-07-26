@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from importlib import metadata
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 from ._core import (
     CommandExecutionError,
@@ -24,6 +27,7 @@ from ._core import (
 
 
 def get_version() -> str:
+    """Return the installed package version."""
     try:
         return metadata.version("richterm")
     except metadata.PackageNotFoundError:  # pragma: no cover - resolved at runtime when installed
@@ -31,13 +35,12 @@ def get_version() -> str:
 
 
 def _default_output_path() -> Path:
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(tz=UTC).astimezone().strftime("%Y%m%d_%H%M%S")
     return Path(f"rich_term_{timestamp}.svg")
 
 
 def get_parser() -> argparse.ArgumentParser:
     """Return the CLI argument parser."""
-
     parser = argparse.ArgumentParser(
         prog="richterm",
         description="Generate SVG transcripts of terminal commands rendered with Rich.",
@@ -118,7 +121,6 @@ def _parse_args(args: Sequence[str] | None) -> CLIOptions:
 
 def main(args: Sequence[str] | None = None) -> int:
     """Entry point for the ``richterm`` command-line interface."""
-
     options = _parse_args(args)
 
     try:

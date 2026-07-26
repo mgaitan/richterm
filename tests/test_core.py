@@ -29,7 +29,8 @@ def test_command_to_display_quotes_arguments() -> None:
 def test_render_svg_includes_prompt_and_command() -> None:
     svg = render_svg("echo hi", "hi\n", RenderOptions(prompt="[bold]$"))
     assert "<svg" in svg
-    assert "echo" in svg and "hi" in svg
+    assert "echo" in svg
+    assert "hi" in svg
     assert "$" in svg
 
 

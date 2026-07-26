@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import sys
 from importlib import metadata
-from pathlib import Path
 from runpy import run_module
+from typing import TYPE_CHECKING
 
 import pytest
 
 from richterm import get_version, main
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 EXIT_STATUS_ERROR = 3
 EXIT_STATUS_NOT_FOUND = 127
@@ -35,7 +38,8 @@ def test_cli_runs_command_and_creates_svg(tmp_path: Path, capsys: pytest.Capture
     assert captured.out.strip().endswith(f"Created {output_path}")
     assert output_path.exists()
     svg = output_path.read_text(encoding="utf-8")
-    assert "<svg" in svg and "hello" in svg
+    assert "<svg" in svg
+    assert "hello" in svg
 
 
 def test_cli_hide_command(tmp_path: Path) -> None:

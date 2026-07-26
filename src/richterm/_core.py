@@ -5,11 +5,14 @@ from __future__ import annotations
 import os
 import shlex
 import subprocess
-from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from io import StringIO
-from pathlib import Path
 from subprocess import CompletedProcess
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+    from pathlib import Path
 
 from rich.console import Console
 from rich.terminal_theme import (
@@ -65,20 +68,17 @@ _TERMINAL_THEMES: dict[str, TerminalTheme] = {
 
 def available_terminal_themes() -> tuple[str, ...]:
     """Return the supported terminal theme names."""
-
     return tuple(_TERMINAL_THEMES)
 
 
 def default_terminal_theme_name(env: Mapping[str, str] | None = None) -> str:
     """Return the default terminal theme name from *env* or the built-in fallback."""
-
     env_vars = os.environ if env is None else env
     return env_vars.get("RICHTERM_THEME", "default")
 
 
 def normalize_terminal_theme(theme: str) -> str:
     """Return a canonical theme name or raise if it is unsupported."""
-
     normalized = theme.strip().lower().replace("_", "-")
     if normalized in _TERMINAL_THEMES:
         return normalized
@@ -88,7 +88,6 @@ def normalize_terminal_theme(theme: str) -> str:
 
 def get_terminal_theme(theme: str) -> TerminalTheme:
     """Resolve *theme* to a Rich terminal theme."""
-
     return _TERMINAL_THEMES[normalize_terminal_theme(theme)]
 
 
@@ -131,10 +130,9 @@ def run_command(
     The standard output and standard error streams are merged so that
     ordering is preserved. ANSI escape sequences are captured verbatim.
     """
-
     try:
         env_vars = _prepare_environment(env)
-        return subprocess.run(
+        return subprocess.run(  # noqa: S603 - executing the requested command is the package's purpose
             command,
             check=False,
             cwd=str(cwd) if cwd is not None else None,
@@ -151,7 +149,6 @@ def run_command(
 
 def render_svg(command_display: str | None, output: str, options: RenderOptions) -> str:
     """Render *output* to SVG, optionally prefixed by *command_display*."""
-
     console = Console(record=True, file=StringIO())
 
     if not options.hide_command and command_display:
@@ -168,5 +165,4 @@ def render_svg(command_display: str | None, output: str, options: RenderOptions)
 
 def command_to_display(command: Sequence[str]) -> str:
     """Return a shell-like representation of *command* suitable for display."""
-
     return shlex.join(command)

@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import shlex
-from collections.abc import Callable
 from types import SimpleNamespace
-from typing import ClassVar
+from typing import TYPE_CHECKING
 
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
-from sphinx.application import Sphinx
 from sphinx.errors import SphinxError
 from sphinx.util import logging
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
 
 from . import get_version
 from ._core import (
@@ -34,7 +35,7 @@ class RichTermDirective(Directive):
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
-    option_spec: ClassVar[dict[str, Callable[[str | None], object]]] = {
+    option_spec = {  # noqa: RUF012 - Docutils requires this mapping on the directive class
         "prompt": directives.unchanged,
         "theme": directives.unchanged,
         "shown-command": directives.unchanged,
@@ -64,6 +65,7 @@ class RichTermDirective(Directive):
         )
 
     def run(self) -> list[nodes.Node]:
+        """Render the configured command as an inline SVG node."""
         raw_command = self.arguments[0].strip()
         if not raw_command:
             raise self.severe("richterm directive requires a command to execute")  # noqa: TRY003
@@ -113,8 +115,9 @@ class RichTermDirective(Directive):
 
 
 def setup(app: Sphinx) -> dict[str, object]:
+    """Register the richterm directive and its configuration values."""
     app.add_config_value("richterm_prompt", "$", "env")
-    app.add_config_value("richterm_hide_command", False, "env")
+    app.add_config_value("richterm_hide_command", False, "env")  # noqa: FBT003 - Sphinx API
     app.add_config_value("richterm_shown_command", None, "env")
     app.add_config_value("richterm_theme", default_terminal_theme_name(), "env")
     app.add_directive("richterm", RichTermDirective)
