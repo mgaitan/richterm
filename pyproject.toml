@@ -18,6 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Documentation",
     "Topic :: Software Development",
     "Topic :: Utilities",
@@ -37,7 +38,7 @@ module-name = "richterm"
 
 [tool.uv]
 exclude-newer = "1 week"
-exclude-newer-package = { ty = "0 days" }
+exclude-newer-package = { ruff = "0 days", ty = "0 days" }
 
 [tool.ty.src]
 exclude = [".worktrees/", ".external-worktrees/"]
@@ -73,6 +74,7 @@ select = [
     "INT",    # https://docs.astral.sh/ruff/rules/#flake8-gettext-int
     "LOG",    # https://docs.astral.sh/ruff/rules/#flake8-logging-log
     "S",      # https://docs.astral.sh/ruff/rules/#flake8-bandit-s
+    "SLF",    # https://docs.astral.sh/ruff/rules/#flake8-self-slf
     "G",      # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
     "FLY",    # https://docs.astral.sh/ruff/rules/#flynt-fly
     "N",      # https://docs.astral.sh/ruff/rules/#pep8-naming-n
@@ -92,7 +94,7 @@ select = [
 ignore = ["D203", "D213"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["ANN", "D", "S101"]
+"tests/**/*.py" = ["ANN", "D", "S101", "SLF"]
 "docs/conf.py" = ["A", "D100"]
 
 [tool.pytest.ini_options]
@@ -123,10 +125,10 @@ test = [
     "pytest-mock>=3.15.1",
     "pytest-cov>=7.1.0",
 ]
-lint = ["ruff>=0.15.22"]
+lint = ["ruff>=0.16.7"]
 qa = [
     { include-group = "lint" },
-    "ty>=0.0.61",
+    "ty>=0.0.80",
 ]
 docs = [
     "myst-parser>=5.1.0",

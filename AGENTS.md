@@ -13,7 +13,7 @@ Description: Generate colorful screenshots of terminal commands
 
 ## Stack
 
-- **Python:** 3.11–3.14 supported (see `pyproject.toml` classifiers).
+- **Python:** 3.11–3.15 supported (see `pyproject.toml` classifiers).
 - **Tests:** pytest + pytest-mock/pytest-freezer, 100% coverage enforced. Run with `make test` or `uv run --extra sphinx pytest`.
 - **Productivity:** Dependencies managed with `uv` via `pyproject.toml`.
 - **Lint/format/QA:** Ruff + Ty (`make qa`). `prek` is available as an optional runner for the QA bundle.
