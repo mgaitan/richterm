@@ -72,7 +72,7 @@ Or in reStructuredText:
 :shown-command: python -m rich rainbow
 ```
 
-The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. Override the prompt per block with `:prompt:`, choose a terminal palette with `:theme:`, hide the command with `:hide-command:`, or swap the displayed command while running another with `:shown-command:` (falls back to `richterm_shown_command` if set).
+The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal code block elsewhere. If the command exits with a nonzero status, the build fails and the error includes its captured output. Add `:allow-failure:` to render that output and let the build continue. Override the prompt per block with `:prompt:`, choose a terminal palette with `:theme:`, hide the command with `:hide-command:`, or swap the displayed command while running another with `:shown-command:` (falls back to `richterm_shown_command` if set).
 If you hide the command, any `:shown-command:` value is ignored and a warning is emitted.
 
 ### Same output, different themes

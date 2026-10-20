@@ -43,6 +43,7 @@ def make_directive(  # noqa: PLR0913
     prompt: str | None = None,
     theme: str | None = None,
     hide_option: bool = False,
+    allow_failure_option: bool = False,
     config_prompt: str = "$",
     config_hide: bool = False,
     shown_command: str | None = None,
@@ -82,6 +83,8 @@ def make_directive(  # noqa: PLR0913
         options["theme"] = RichTermDirective.option_spec["theme"](theme)
     if hide_option:
         options["hide-command"] = RichTermDirective.option_spec["hide-command"](None)
+    if allow_failure_option:
+        options["allow-failure"] = RichTermDirective.option_spec["allow-failure"](None)
     if shown_command is not None:
         options["shown-command"] = RichTermDirective.option_spec["shown-command"](shown_command)
 
@@ -223,10 +226,31 @@ def test_directive_theme_option_overrides_config() -> None:
     assert 'fill="#292929"' not in svg_text
 
 
-def test_directive_failure_raises_sphinx_error() -> None:
-    directive = make_directive('python -c "import sys; sys.exit(2)"')
-    with pytest.raises(SphinxError):
+def test_directive_failure_includes_captured_output() -> None:
+    directive = make_directive(
+        'python -c "import sys; print(\'failure stdout\'); '
+        'print(\'failure stderr\', file=sys.stderr); sys.exit(2)"'
+    )
+    with pytest.raises(SphinxError) as exc_info:
         directive.run()
+
+    message = str(exc_info.value)
+    assert "exited with status 2" in message
+    assert "failure stdout" in message
+    assert "failure stderr" in message
+
+
+def test_directive_allow_failure_renders_captured_output() -> None:
+    directive = make_directive(
+        'python -c "import sys; print(\'failure output\'); sys.exit(2)"',
+        allow_failure_option=True,
+    )
+
+    nodes = directive.run()
+
+    assert len(nodes) == 1
+    svg_text = _normalize_svg(nodes[0].astext())
+    assert "failure output" in svg_text
 
 
 def test_directive_html_builder_omits_fallback() -> None:

@@ -81,7 +81,7 @@ Or in reStructuredText:
 .. richterm:: python -m rich --force-terminal --no-color-system example
 ```
 
-The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal block for non-HTML builders. The `:prompt:` and `:hide-command:` options mirror the CLI flags.
+The directive executes the command during the build, embeds the SVG directly in HTML output, and falls back to a literal block for non-HTML builders. The `:prompt:` and `:hide-command:` options mirror the CLI flags. A nonzero exit fails the build by default; add `:allow-failure:` to render the captured output and continue.
 
 ## Development
 
