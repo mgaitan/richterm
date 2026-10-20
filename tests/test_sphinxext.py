@@ -226,10 +226,9 @@ def test_directive_theme_option_overrides_config() -> None:
     assert 'fill="#292929"' not in svg_text
 
 
-def test_directive_failure_includes_captured_output() -> None:
+def test_directive_failure_includes_captured_output():
     directive = make_directive(
-        'python -c "import sys; print(\'failure stdout\'); '
-        'print(\'failure stderr\', file=sys.stderr); sys.exit(2)"'
+        "python -c \"import sys; print('failure stdout'); print('failure stderr', file=sys.stderr); sys.exit(2)\""
     )
     with pytest.raises(SphinxError) as exc_info:
         directive.run()
@@ -240,9 +239,9 @@ def test_directive_failure_includes_captured_output() -> None:
     assert "failure stderr" in message
 
 
-def test_directive_allow_failure_renders_captured_output() -> None:
+def test_directive_allow_failure_renders_captured_output():
     directive = make_directive(
-        'python -c "import sys; print(\'failure output\'); sys.exit(2)"',
+        "python -c \"import sys; print('failure output'); sys.exit(2)\"",
         allow_failure_option=True,
     )
 
