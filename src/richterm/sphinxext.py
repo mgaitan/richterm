@@ -40,6 +40,7 @@ class RichTermDirective(Directive):
         "theme": directives.unchanged,
         "shown-command": directives.unchanged,
         "hide-command": directives.flag,
+        "allow-failure": directives.flag,
     }
     has_content = False
 
@@ -95,6 +96,14 @@ class RichTermDirective(Directive):
             raise self.severe(str(exc)) from exc
 
         transcript = completed.stdout or ""
+
+        if completed.returncode != 0 and "allow-failure" not in self.options:
+            output = transcript or "(no output captured)"
+            raise SphinxError(  # noqa: TRY003
+                f"Command '{command_to_display(command)}' exited with status {completed.returncode}\n"
+                f"Captured output:\n{output}"
+            )
+
         command_display = None
         if not hide_command:
             command_display = shown_command or command_to_display(command)
@@ -105,11 +114,6 @@ class RichTermDirective(Directive):
         )
 
         raw_node = nodes.raw("", svg, format="html")
-
-        if completed.returncode != 0:
-            raise SphinxError(  # noqa: TRY003
-                f"Command '{command_to_display(command)}' exited with status {completed.returncode}"
-            )
 
         return [raw_node]
 
